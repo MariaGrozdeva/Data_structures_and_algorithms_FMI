@@ -23,7 +23,7 @@ bool contains(const int* arr, size_t len, int el)
 	return false;
 }
 
-// BC = AC = WC-> O(n)
+// BC = AC = WC -> O(n)
 size_t f1(size_t n) // sum = 1 + 2 + ... + n = n(n+1)/2
 {
 	size_t sum = 0;
