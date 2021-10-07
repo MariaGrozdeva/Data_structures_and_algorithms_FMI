@@ -75,7 +75,7 @@ size_t f2_better(size_t n)
 }
 
 // BC -> O(1), AC = WC -> O(log(n))
-bool f3(size_t n) // check if n is a power of two
+bool f3(size_t n) // checks if n is a power of two
 {
 	while (n > 1)
 	{
