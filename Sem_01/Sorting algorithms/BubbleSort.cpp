@@ -9,7 +9,6 @@ void Swap(T* arr, int x, int y)
 	arr[y] = temp;
 }
 
-// BC -> O(n), AC = WC -> O(n^2)
 template<typename T>
 void BubbleSort(T* arr, int len)
 {
