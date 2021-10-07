@@ -9,8 +9,6 @@ void Swap(T* arr, int x, int y)
 	arr[y] = temp;
 }
 
-// BC = AC = WC -> O(n^2)
-// NOT stable - does NOT maintain the relative order of records with equal keys
 template<typename T>
 void SelectionSort(T* arr, int len)
 {
