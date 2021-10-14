@@ -18,9 +18,9 @@ int getMax(const int* arr, int len)
 }
 ```
 
-*Рекурентно уравнение, описващо работата на алгоритъма GetMaxRecursive:*
-**GetMaxRecursive(len) = 1 + GetMaxRecursive(len - 1)
-T(n) = 1 + T(n - 1)**
+*Рекурентно уравнение, описващо работата на алгоритъма GetMaxRecursive:*  
+**GetMaxRecursive(len) = 1 + GetMaxRecursive(len - 1)  
+T(n) = 1 + T(n - 1)**  
 
 Ще решим това рекурентно уравнение чрез метода на **характеристичното уравнение**:
 - T(n) = 1 + T(n - 1) <=>
