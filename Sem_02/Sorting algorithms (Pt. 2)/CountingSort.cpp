@@ -9,7 +9,6 @@ struct Student
 	int grade;
 };
 
-// 1. Counting sort (Complexity - 0(n+m)), n - size of the array(len), m - restriction for the array's elements (arr[i] = 1,2,..,m)
 void CountingSortForGrades(Student* arr, int len, int range)
 {
 	int* enumerativeArray = new int[range] { 0 };
