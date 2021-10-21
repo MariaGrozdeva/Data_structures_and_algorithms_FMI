@@ -36,7 +36,6 @@ int RPN(string expr)
 			numbers.push(n);
 			i--;
 		}
-
 	}
 	return numbers.top();
 }
