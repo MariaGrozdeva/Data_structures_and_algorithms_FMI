@@ -40,7 +40,7 @@
 -  **push** – добавя нов елемент  най - отгоре  
 -  **pop** – премахва най - горния елемент  
 - **top** – показва най-горния елемент от стека, без да го премахва   
-![alt text](https://i.ibb.co/dcH7Tdz/Stack.png)
+![alt text](https://i.ibb.co/CKNwLNq/Stack.png)
 
 ## Задачи
 
