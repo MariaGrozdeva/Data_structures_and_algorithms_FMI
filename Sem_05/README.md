@@ -39,6 +39,7 @@ v
 
 **Задача 5:** Даден е списък **l** с елементи стекове.  
 Да се дефинира функция *equalize(l)*, която размества елементите на стековете така, че *да няма два стека в l с разлика в броя на елементите, по-голяма от 1*.  
+
 *Пример:*  
 *Вход:* &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Изход:*
 ```c++
