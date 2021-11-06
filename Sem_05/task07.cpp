@@ -71,4 +71,10 @@ int main()
 		std::cout << five->data << " ";
 		five = five->next;
 	}
+	
+	delete one;
+	delete two;
+	delete three;
+	delete four;
+	delete five;
 }
