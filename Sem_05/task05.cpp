@@ -1,6 +1,6 @@
-#include<iostream>
-#include<stack>
-#include<list>
+#include <iostream>
+#include <stack>
+#include <list>
 
 template <typename T>
 struct Node
