@@ -26,25 +26,25 @@ void equalize(std::list<std::stack<int>>& arg)
 			overMedian.push_back(x);
 	}
 
-	int iteratorFirst = 0;
-	int iteratorSecond = 0;
+	int iteratorOverMedian = 0;
+	int iteratorUnderMedian = 0;
 
 	for (std::stack<int>& x : underMedian) 
 	{
 		while (x.size() <= median - !(eq)) 
 		{
-			while (overMedian[iteratorFirst].size() == median)
+			while (overMedian[iteratorOverMedian].size() == median)
 			{
-				if (overMedian.size() == iteratorFirst + 1)
-					overMedian.push_back(underMedian[iteratorSecond++]);
+				if (overMedian.size() == iteratorOverMedian + 1)
+					overMedian.push_back(underMedian[iteratorUnderMedian++]);
 
-				++iteratorFirst;
+				++iteratorOverMedian;
 			}
-			x.push(overMedian[iteratorFirst].top());
-			overMedian[iteratorFirst].pop();
+			x.push(overMedian[iteratorOverMedian].top());
+			overMedian[iteratorOverMedian].pop();
 		}
 	}
-	for (int i = 0; i < iteratorSecond; i++)
+	for (int i = 0; i < iteratorUnderMedian; i++)
 		overMedian.pop_back();
 
 	arg.clear();
@@ -56,7 +56,8 @@ void equalize(std::list<std::stack<int>>& arg)
 		arg.push_back(underMedian[i]);
 }
 
-int main() {
+int main() 
+{
 	std::list<std::stack<int>> l;
 	std::stack<int> a;
 	std::stack<int> d;
