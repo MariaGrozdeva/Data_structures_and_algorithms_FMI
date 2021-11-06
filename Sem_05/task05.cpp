@@ -2,7 +2,7 @@
 #include<stack>
 #include<list>
 
-template<class T>
+template <typename T>
 struct Node
 {
 	T data;
@@ -42,7 +42,7 @@ Node<T>* getMiddle(Node<T>* list)
 		return slowIter->next;
 }
 
-template<class T>
+template <typename T>
 void shuffle(Node<T>* start)
 {
 	Node<T>* middleNode = getMiddle(start);
@@ -80,7 +80,6 @@ void shuffle(Node<T>* start)
 	}
 
 	listToReturn->next = beginningOfFirstHalf;
-
 	endOfFirstHalf->next = nullptr;
 }
 
@@ -99,8 +98,8 @@ int main()
 	three->next = four;
   
 	Node<int>* two = new Node<int>;
+        two->data = 2;
 	two->next = three;
-  two->data = 2;
   
 	Node<int>* one = new Node<int>;
 	one->next = two;
@@ -108,12 +107,11 @@ int main()
   
 	shuffle(one);
 
-
 	while (five)
 	{
 		std::cout << five->data << " ";
 		five = five->next;
 	}
   
-  delete one, two, three, four, five; 
+ 	delete one, two, three, four, five; 
 }
