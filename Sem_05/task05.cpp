@@ -48,4 +48,9 @@ int main()
 	two->next = four;
 
 	std::cout << reduce(two, divs);
+	
+	delete end;
+	delete eigth;
+	delete four;
+	delete two;
 }
