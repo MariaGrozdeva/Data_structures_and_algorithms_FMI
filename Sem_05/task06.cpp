@@ -1,7 +1,7 @@
-#include<iostream>
-#include<vector>
-#include<stack>
-#include<list>
+#include <iostream>
+#include <vector>
+#include <stack>
+#include <list>
 
 void equalize(std::list<std::stack<int>>& arg)
 {
