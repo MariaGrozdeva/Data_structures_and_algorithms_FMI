@@ -26,7 +26,7 @@ public:
 	void push(const T& element);
 	void pop();
 	const T& top();
-	bool empty();
+	bool empty() const;
 };
 
 template <typename T>
@@ -55,7 +55,7 @@ const T& Stack<T>::top()
 	return arr[size - 1];
 }
 template <typename T>
-bool Stack<T>::empty()
+bool Stack<T>::empty() const
 {
 	return size == 0;
 }
