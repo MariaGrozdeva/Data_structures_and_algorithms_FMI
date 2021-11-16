@@ -27,7 +27,7 @@ private:
 public:
 	void push_back(const T& element);
 	void pop_back();
-	bool empty();
+	bool empty() const;
 
 	T& operator[](size_t index);
 	const T& operator[](size_t index) const;
@@ -51,7 +51,7 @@ void Vector<T>::pop_back()
 		resize(capacity / 2);
 }
 template <typename T>
-bool Vector<T>::empty()
+bool Vector<T>::empty() const
 {
 	return size == 0;
 }
