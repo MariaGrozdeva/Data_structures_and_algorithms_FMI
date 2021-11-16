@@ -55,7 +55,7 @@ template <typename T>
 void LinkedStack<T>::pop()
 {
 	if (!head)
-		throw length_error("Empty list!");
+		throw length_error("Empty stack!");
 
 	if (head == tail)
 	{
@@ -72,7 +72,7 @@ template <typename T>
 const T& LinkedStack<T>::top()
 {
 	if (!head)
-		throw length_error("Empty list!");
+		throw length_error("Empty stack!");
 
 	return head->data;
 }
