@@ -38,6 +38,8 @@ public:
 
 	const T& front();
 	const T& back();
+	
+	bool empty() const;
 
 	template <typename U>
 	friend SinglyLinkedList<U> concat(SinglyLinkedList<U>& lhs, SinglyLinkedList<U>& rhs);
@@ -107,6 +109,12 @@ const T& SinglyLinkedList<T>::back()
 		throw length_error("Empty list!");
 
 	return tail->data;
+}
+
+template <typename T>
+bool SinglyLinkedList<T>::empty() const
+{
+	return head == nullptr;
 }
 
 template <typename T>
