@@ -213,7 +213,7 @@ void DoublyLinkedList<T>::print() const
 	{
 		cout << iter->data << ' ';
 		if (iter->next)
-			cout << "->" << ' ';
+			cout << "<->" << ' ';
 		iter = iter->next;
 	}
 }
