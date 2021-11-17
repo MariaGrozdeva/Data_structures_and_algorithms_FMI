@@ -2,7 +2,7 @@
 using namespace std;
 
 template <typename T>
-class Stack
+class ArrayStack
 {
 private:
 	T* arr;
@@ -11,13 +11,13 @@ private:
 	size_t capacity;
 
 public:
-	Stack();
-	Stack(const Stack<T>& other);
-	Stack<T>& operator=(const Stack<T>& other);
-	~Stack();
+	ArrayStack();
+	ArrayStack(const ArrayStack<T>& other);
+	ArrayStack<T>& operator=(const ArrayStack<T>& other);
+	~ArrayStack();
 
 private:
-	void copyFrom(const Stack<T>& other);
+	void copyFrom(const ArrayStack<T>& other);
 	void free();
 
 	void resize(size_t capacity);
@@ -30,7 +30,7 @@ public:
 };
 
 template <typename T>
-void Stack<T>::push(const T& element)
+void ArrayStack<T>::push(const T& element)
 {
 	if (size >= capacity)
 		resize(capacity * 2);
@@ -38,30 +38,30 @@ void Stack<T>::push(const T& element)
 	arr[size++] = element;
 }
 template <typename T>
-void Stack<T>::pop()
+void ArrayStack<T>::pop()
 {
 	if (empty())
-		throw length_error("Empty stack!");
+		throw length_error("Empty ArrayStack!");
 
 	if (--size * 2 <= capacity && capacity > 1)
 		resize(capacity / 2);
 }
 template <typename T>
-const T& Stack<T>::top()
+const T& ArrayStack<T>::top()
 {
 	if (empty())
-		throw length_error("Empty stack!");
+		throw length_error("Empty ArrayStack!");
 
 	return arr[size - 1];
 }
 template <typename T>
-bool Stack<T>::empty() const
+bool ArrayStack<T>::empty() const
 {
 	return size == 0;
 }
 
 template <typename T>
-Stack<T>::Stack()
+ArrayStack<T>::ArrayStack()
 {
 	size = 0;
 	capacity = 4;
@@ -69,12 +69,12 @@ Stack<T>::Stack()
 	arr = new T[capacity];
 }
 template<typename T>
-Stack<T>::Stack(const Stack<T>& other)
+ArrayStack<T>::ArrayStack(const ArrayStack<T>& other)
 {
 	copyFrom(other);
 }
 template<typename T>
-Stack<T>& Stack<T>::operator=(const Stack<T>& other)
+ArrayStack<T>& ArrayStack<T>::operator=(const ArrayStack<T>& other)
 {
 	if (this != &other)
 	{
@@ -85,13 +85,13 @@ Stack<T>& Stack<T>::operator=(const Stack<T>& other)
 	return *this;
 }
 template <typename T>
-Stack<T>::~Stack()
+ArrayStack<T>::~ArrayStack()
 {
 	free();
 }
 
 template<typename T>
-void Stack<T>::copyFrom(const Stack<T>& other)
+void ArrayStack<T>::copyFrom(const ArrayStack<T>& other)
 {
 	arr = new T[other.capacity];
 
@@ -102,13 +102,13 @@ void Stack<T>::copyFrom(const Stack<T>& other)
 		arr[i] = other.arr[i];
 }
 template<typename T>
-void Stack<T>::free()
+void ArrayStack<T>::free()
 {
 	delete[] arr;
 }
 
 template <typename T>
-void Stack<T>::resize(size_t capacity)
+void ArrayStack<T>::resize(size_t capacity)
 {
 	this->capacity = capacity;
 	T* temp = new T[capacity];
