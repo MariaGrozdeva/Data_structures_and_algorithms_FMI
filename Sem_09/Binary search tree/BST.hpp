@@ -182,7 +182,7 @@ void BST<T>::removeRec(const T& el, Node*& root)
 	{
 		Node* maxNode;
 		findMax(toDelete->left, maxNode);
-		swap(toDelete->data, maxNode->data);
+		swap(toDelete->data, maxNode->data); // !!!
 		removeRec(maxNode->data, toDelete->left);
 	}
 }
