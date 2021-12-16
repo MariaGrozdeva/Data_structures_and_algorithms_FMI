@@ -29,7 +29,7 @@ void AdjacencyListGraph::removeVertex(int vertex)
 			{
 				if (it->end > vertex)
 					it->end--;
-				it++;
+				++it;
 			}
 		}
 	}
@@ -54,7 +54,7 @@ void AdjacencyListGraph::removeEdge(int start, int end)
 		if (it->end == end)
 			it = adjList[start].erase(it);
 		else
-			it++;
+			++it;
 	}
 
 	if (oriented)
@@ -73,7 +73,7 @@ vector<pair<int, int>> AdjacencyListGraph::getSuccessors(int vertex) const
 {
 	vector<pair<int, int>> successors;
 
-	for (auto it = adjList[vertex].begin(); it != adjList[vertex].end(); it++)
+	for (auto it = adjList[vertex].begin(); it != adjList[vertex].end(); ++it)
 		successors.push_back(make_pair(it->end, it->weight));
 
 	return successors;
@@ -84,7 +84,7 @@ vector<pair<int, int>> AdjacencyListGraph::getPredecessors(int vertex) const
 
 	for (size_t i = 0; i < verticesCount; i++)
 	{
-		for (auto it = adjList[i].begin(); it != adjList[i].end(); it++)
+		for (auto it = adjList[i].begin(); it != adjList[i].end(); ++it)
 		{
 			if (it->end == vertex)
 				predecessors.push_back(make_pair(i, it->weight));
@@ -98,7 +98,7 @@ bool AdjacencyListGraph::adjacent(int vertex1, int vertex2) const
 	if (!existsVertex(vertex1) || !existsVertex(vertex2))
 		throw "Invalid vertices!";
 
-	for (auto it = adjList[vertex1].begin(); it != adjList[vertex1].end(); it++)
+	for (auto it = adjList[vertex1].begin(); it != adjList[vertex1].end(); ++it)
 	{
 		if (it->end == vertex2)
 			return true;
@@ -112,7 +112,7 @@ AdjacencyListGraph AdjacencyListGraph::getTransposedGraph() const
 
 	for (size_t i = 0; i < adjList.size(); i++)
 	{
-		for (auto j = adjList[i].begin(); j != adjList[i].end(); j++)
+		for (auto it = adjList[i].begin(); it != adjList[i].end(); ++it)
 			transposedGraph.addEdge((*j).end, i, (*j).weight);
 	}
 
