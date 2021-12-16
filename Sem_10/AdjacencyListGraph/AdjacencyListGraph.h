@@ -1,3 +1,4 @@
+#include <tuple>
 #include "Graph.h"
 
 class AdjacencyListGraph : public Graph
@@ -24,6 +25,8 @@ public:
 	vector<pair<int, int>> getPredecessors(int vertex) const;
 
 	bool adjacent(int vertex1, int vertex2) const; // O(n)
+
+	void getEdges(vector<tuple<int, int, int>>& edges) const; // O(n+m)
 
 	AdjacencyListGraph getTransposedGraph() const; // O(n+m)
 };
