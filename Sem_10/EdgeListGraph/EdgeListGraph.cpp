@@ -24,7 +24,7 @@ void EdgeListGraph::removeVertex(int vertex)
 			if (it->end > vertex)
 				it->end--;
 
-			it++;
+			++it;
 		}
 	}
 	verticesCount--;
@@ -46,7 +46,7 @@ void EdgeListGraph::removeEdge(int start, int end)
 		if (it->start == start && it->end == end)
 			it = edgeList.erase(it);
 		else
-			it++;
+			++it;
 	}
 }
 
@@ -54,7 +54,7 @@ vector<pair<int, int>> EdgeListGraph::getSuccessors(int vertex) const
 {
 	vector<pair<int, int>> successors;
 
-	for (auto it = edgeList.begin(); it != edgeList.end(); it++)
+	for (auto it = edgeList.begin(); it != edgeList.end(); ++it)
 	{
 		if (it->start == vertex)
 			successors.push_back(make_pair(it->end, it->weight));
@@ -65,7 +65,7 @@ vector<pair<int, int>> EdgeListGraph::getPredecessors(int vertex) const
 {
 	vector<pair<int, int>> predecessors;
 
-	for (auto it = edgeList.begin(); it != edgeList.end(); it++)
+	for (auto it = edgeList.begin(); it != edgeList.end(); ++it)
 	{
 		if (it->end == vertex)
 			predecessors.push_back(make_pair(it->start, it->weight));
@@ -75,7 +75,7 @@ vector<pair<int, int>> EdgeListGraph::getPredecessors(int vertex) const
 
 bool EdgeListGraph::adjacent(int vertex1, int vertex2) const
 {
-	for (auto it = edgeList.begin(); it != edgeList.end(); it++)
+	for (auto it = edgeList.begin(); it != edgeList.end(); ++it)
 	{
 		if (it->start == vertex1 && it->end == vertex2)
 			return true;
