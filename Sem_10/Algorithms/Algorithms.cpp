@@ -1,4 +1,4 @@
-﻿#include <queue>
+#include <queue>
 #include <stack>
 
 #include "AdjacencyListGraph.h"
@@ -61,6 +61,30 @@ void DFS(const Graph& g, int start)
 		for (size_t i = 0; i < adjacent.size(); i++)
 			s.push(adjacent[i].first);
 	}
+}
+
+void DFS_rec(const Graph& g, vector<bool>& visited, int currentVertex)
+{
+	visited[currentVertex] = true;
+	cout << currentVertex << endl;
+
+	vector<pair<int, int>> adjacent = g.getSuccessors(currentVertex);
+
+	for (int i = 0; i < adjacent.size(); i++)
+	{
+		if (visited[adjacent[i].first])
+			continue;
+
+		DFS_rec(g, visited, adjacent[i].first);
+	}
+}
+void DFSrec(const Graph& g, int start)
+{
+	if (!g.existsVertex(start))
+		return;
+
+	vector<bool> visited(g.getVerticesCount());
+	DFS_rec(g, visited, start);
 }
 
 int main()
