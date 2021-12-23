@@ -70,7 +70,7 @@ void DFS_rec(const Graph& g, vector<bool>& visited, int currentVertex)
 
 	vector<pair<int, int>> adjacent = g.getSuccessors(currentVertex);
 
-	for (int i = 0; i < adjacent.size(); i++)
+	for (size_t i = 0; i < adjacent.size(); i++)
 	{
 		if (visited[adjacent[i].first])
 			continue;
