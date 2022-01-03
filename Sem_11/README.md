@@ -32,5 +32,5 @@
 
 ![alt_text](https://i.ibb.co/6ss7NfH/Connected-components.png)
 ```c++
-getSumOfMaxElsInComponents(g) // 26 (12 + 8 + 6)
+getSumOfMaxElInConnectedComp(g) // 26 (12 + 8 + 6)
 ```
