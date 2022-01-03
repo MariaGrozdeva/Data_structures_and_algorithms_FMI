@@ -27,7 +27,7 @@ public:
 	}
 };
 
-int BFS_maxElInConnectedCompOfGraph(const Graph& g, int start, vector<bool>& visited)
+int BFS_maxElInConnectedComp(const Graph& g, int start, vector<bool>& visited)
 {
 	queue<int> q;
 	int maxVertex = start;
@@ -56,7 +56,7 @@ int BFS_maxElInConnectedCompOfGraph(const Graph& g, int start, vector<bool>& vis
 
 	return maxVertex;
 }
-int getSumOfMaxElInConnectedCompOfGraph(const Graph& g)
+int getSumOfMaxElInConnectedComp(const Graph& g)
 {
 	int sum = 0;
 	vector<bool> visited(g.getVerticesCount(), false);
@@ -66,7 +66,7 @@ int getSumOfMaxElInConnectedCompOfGraph(const Graph& g)
 		if (visited[i])
 			continue;
 
-		sum += BFS_maxElInConnectedCompOfGraph(g, i, visited);
+		sum += BFS_maxElInConnectedComp(g, i, visited);
 	}
 
 	return sum;
@@ -90,5 +90,5 @@ int main()
 	g.addEdge(9, 12);
 	g.addEdge(11, 12);
 
-	cout << getSumOfMaxElInConnectedCompOfGraph(g);
+	cout << getSumOfMaxElInConnectedComp(g);
 }
