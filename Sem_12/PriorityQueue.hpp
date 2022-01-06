@@ -78,7 +78,7 @@ void PriorityQueue<T>::pop()
 	heap[0] = heap[heap.size() - 1];
 	heap.pop_back();
 
-	if (heap.size() != 0)
+	if (!empty())
 		heapify(0);
 }
 template <typename T>
