@@ -17,6 +17,7 @@ private:
 
 		bool operator>(const Node& other) const
 		{
+			// simulate operator> with operator< (so that the user defines only operator<)
 			if (!(data < other.data) && !(data < other.data && other.data < data))
 				return true;
 
@@ -110,30 +111,30 @@ void PriorityQueue<T>::heapify(size_t i)
 		size_t leftChildInd = leftChild(i);
 		size_t rightChildInd = rightChild(i);
 
-		bool shouldGoLeft = leftChildInd < heap.size() && *heap[leftChildInd] > * heap[i];
-		bool shouldGoRight = rightChildInd < heap.size() && *heap[rightChildInd] > * heap[i];
+		bool shouldGoLeft = leftChildInd < heap.size() && *heap[leftChildInd] > *heap[i];
+		bool shouldGoRight = rightChildInd < heap.size() && *heap[rightChildInd] > *heap[i];
 
 		if (shouldGoLeft && shouldGoRight)
 		{
-			if (*heap[leftChildInd] > * heap[rightChildInd])
+			if (*heap[leftChildInd] > *heap[rightChildInd])
 			{
-				swap(*heap[i], *heap[leftChildInd]);
+				swap(heap[i], heap[leftChildInd]);
 				i = leftChildInd;
 			}
 			else
 			{
-				swap(*heap[i], *heap[rightChildInd]);
+				swap(heap[i], heap[rightChildInd]);
 				i = rightChildInd;
 			}
 		}
 		else if (shouldGoLeft)
 		{
-			swap(*heap[i], *heap[leftChildInd]);
+			swap(heap[i], heap[leftChildInd]);
 			i = leftChildInd;
 		}
 		else if (shouldGoLeft)
 		{
-			swap(*heap[i], *heap[rightChildInd]);
+			swap(heap[i], heap[rightChildInd]);
 			i = rightChildInd;
 		}
 		else 
