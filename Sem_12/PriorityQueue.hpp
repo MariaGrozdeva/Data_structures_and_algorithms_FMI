@@ -21,7 +21,8 @@ private:
 			if (!(data < other.data) && !(data < other.data && other.data < data))
 				return true;
 
-			if (data == other.data)
+			// simulate operator==
+			if (data < other.data && other.data < data)
 				return timeStamp < other.timeStamp;
 
 			return false;
