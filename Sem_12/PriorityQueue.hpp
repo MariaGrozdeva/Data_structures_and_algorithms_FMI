@@ -17,7 +17,7 @@ private:
 
 		bool operator>(const Node& other) const
 		{
-			// simulate operator> with operator< (so that the user defines only operator<)
+			// simulate operator> with operator< (so that the user has only to define operator<)
 			if (!(data < other.data) && !(data < other.data && other.data < data))
 				return true;
 
