@@ -53,7 +53,7 @@ void LinearProbingHash<ValueType>::insert(int key, const ValueType& value)
 
 	while (!linearProb[hashCode].empty)
 		(++hashCode) % linearProb.capacity();
-	linearProb[hashCode] = Pair(key, value, false);
+	linearProb[hashCode] = Pair(key, value, false, false);
 	size++;
 
 	if (size >= maxFillLevel)
