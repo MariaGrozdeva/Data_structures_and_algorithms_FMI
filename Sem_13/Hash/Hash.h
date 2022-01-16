@@ -41,5 +41,5 @@ public:
 
 	virtual void insert(int key, const ValueType& value) = 0;
 	virtual const ValueType& find(int key) const = 0;
-	virtual void remove(int key) = 0;
+	virtual bool remove(int key) = 0;
 };
