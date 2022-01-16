@@ -33,7 +33,7 @@ public:
 
 	void insert(int key, const ValueType& value) override;
 	const ValueType& find(int key) const override;
-	void remove(int key) override;
+	bool remove(int key) override;
 };
 
 template <typename ValueType>
@@ -74,21 +74,22 @@ const ValueType& LinearProbingHash<ValueType>::find(int key) const
 	throw "No such element!";
 }
 template <typename ValueType>
-void LinearProbingHash<ValueType>::remove(int key)
+bool LinearProbingHash<ValueType>::remove(int key)
 {
 	size_t hashCode = Hash<ValueType>::hashFunc->calculateHashCode(key) % linearProb.capacity();
 
 	while (!linearProb[hashCode].empty || linearProb[hashCode].hasBeenDeleted)
 	{
-		if (linearProb[hashCode].key == key)
+		if (linearProb[hashCode].key == key && !linearProb[hashCode].hasBeenDeleted)
 		{
 			linearProb[hashCode].empty = true;
 			linearProb[hashCode].hasBeenDeleted = true;
 			size--;
-			return;
+			return true;
 		}
 		(++hashCode) % linearProb.capacity();
 	}
+	return false;
 }
 
 template <typename ValueType>
