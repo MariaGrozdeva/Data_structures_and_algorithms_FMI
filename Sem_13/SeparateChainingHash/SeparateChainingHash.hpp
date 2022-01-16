@@ -28,7 +28,7 @@ public:
 
 	void insert(int key, const ValueType& value) override;
 	const ValueType& find(int key) const override;
-	void remove(int key) override;
+	bool remove(int key) override;
 };
 
 template <typename ValueType>
@@ -64,7 +64,7 @@ const ValueType& SeparateChainingHash<ValueType>::find(int key) const
 	throw "No such element!";
 }
 template <typename ValueType>
-void SeparateChainingHash<ValueType>::remove(int key)
+bool SeparateChainingHash<ValueType>::remove(int key)
 {
 	size_t hashCode = Hash<ValueType>::hashFunc->calculateHashCode(key) % sepChaining.capacity();
 
@@ -74,9 +74,10 @@ void SeparateChainingHash<ValueType>::remove(int key)
 		{
 			it = sepChaining[hashCode].erase(it);
 			size--;
-			return;
+			return true;
 		}
 	}
+	return false;
 }
 
 template <typename ValueType>
