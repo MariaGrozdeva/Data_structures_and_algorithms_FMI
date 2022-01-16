@@ -36,6 +36,8 @@ SeparateChainingHash<ValueType>::SeparateChainingHash(HashingFunction* hashFunc,
 {
 	sepChaining.resize(capacity);
 	setMaxFillLevel(capacity);
+	
+	size = 0
 }
 
 template <typename ValueType>
@@ -98,5 +100,5 @@ void SeparateChainingHash<ValueType>::resize()
 template <typename ValueType>
 void SeparateChainingHash<ValueType>::setMaxFillLevel(size_t capacity)
 {
-	maxFillLevel = (7 * capacity) / 10;
+	maxFillLevel = (8 * capacity) / 10;
 }
