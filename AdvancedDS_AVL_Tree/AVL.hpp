@@ -139,7 +139,7 @@ private:
 	void free();
 
 public:
-	AVL() = default;
+	AVL();
 	AVL(const AVL<T> & other);
 	AVL<T>& operator=(const AVL<T> & other);
 	~AVL();
@@ -328,6 +328,9 @@ bool AVL<T>::empty() const
 	return root == nullptr;
 }
 
+template <typename T>
+AVL<T>::AVL() : root(nullptr)
+{}
 template <typename T>
 AVL<T>::AVL(const AVL<T>& other)
 {
