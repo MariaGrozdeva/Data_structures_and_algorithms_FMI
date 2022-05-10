@@ -17,7 +17,7 @@ void CountingSortForGrades(Student* arr, int len, int range)
 	for (int i = 0; i < len; i++)
 		enumerativeArray[arr[i].grade - 2]++;
 
-	for (int i = 0; i < len - 1; i++)
+	for (int i = 0; i < range - 1; i++)
 		enumerativeArray[i + 1] += enumerativeArray[i];
 
 	for (int i = len - 1; i >= 0; i--)
