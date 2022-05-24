@@ -6,9 +6,9 @@ template <typename T>
 class BinomialHeap
 {
 private:
-	std::list<BinomialTree<T>> data;
-    	size_t size = 0; // number of currently contained values
-	mutable std::optional<T> min;
+    std::list<BinomialTree<T>> data;
+    size_t size = 0; // number of currently contained values
+    mutable std::optional<T> min;
 
     void push_back(const BinomialTree<T>& el);
     void pop_front();
