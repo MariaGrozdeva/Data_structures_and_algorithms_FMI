@@ -2,18 +2,18 @@
 
 int main()
 {
-	BinomialHeap<int> b;
-	b.insert(2);
-	b.insert(7);
-	b.insert(4);
-	b.insert(8);
-	b.insert(12);
-	b.insert(10);
-	b.insert(5);
-	b.insert(21);
-	b.insert(1);
-	b.insert(9);
-	b.insert(11);
+	BinomialHeap<int> binHeap;
+	binHeap.insert(2);
+	binHeap.insert(7);
+	binHeap.insert(4);
+	binHeap.insert(8);
+	binHeap.insert(12);
+	binHeap.insert(10);
+	binHeap.insert(5);
+	binHeap.insert(21);
+	binHeap.insert(1);
+	binHeap.insert(9);
+	binHeap.insert(11);
 
-	std::cout << b.getMin();
+	std::cout << binHeap.getMin();
 }
