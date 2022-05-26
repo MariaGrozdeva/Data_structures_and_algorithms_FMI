@@ -13,11 +13,10 @@ private:
     struct Node
     {
         T data;
-        Node* parent;
         Node* next; // right sibling
         Node* firstChild; // left child
 
-        Node(const T& data) : data(data), parent(nullptr), next(nullptr), firstChild(nullptr)
+        Node(const T& data) : data(data), next(nullptr), firstChild(nullptr)
         {}
     };
 
@@ -80,7 +79,6 @@ BinomialTree<T> mergeTrees<T>(const BinomialTree<T>& lhs, const BinomialTree<T>&
         auto prevFirstChild = rhsCopy.root->firstChild;
         rhsCopy.root->firstChild = lhsCopy.root;
         lhsCopy.root->next = prevFirstChild;
-        lhsCopy.root->parent = rhsCopy.root;
 
         lhsCopy.root = nullptr;
         ++rhsCopy.rank;
@@ -92,7 +90,6 @@ BinomialTree<T> mergeTrees<T>(const BinomialTree<T>& lhs, const BinomialTree<T>&
     auto prevFirstChild = lhsCopy.root->firstChild;
     lhsCopy.root->firstChild = rhsCopy.root;
     rhsCopy.root->next = prevFirstChild;
-    rhsCopy.root->parent = lhsCopy.root;
 
     rhsCopy.root = nullptr;
     ++lhsCopy.rank;

@@ -3,10 +3,15 @@
 #include "BinomialTree.hpp"
 
 template <typename T>
+class BinomialHeap;
+template <typename T>
+void mergeHeaps(BinomialHeap<T>& result, BinomialHeap<T>& lhs, BinomialHeap<T>& rhs);
+
+template <typename T>
 class BinomialHeap
 {
 private:
-    std::list<BinomialTree<T>> data;
+	std::list<BinomialTree<T>> data;
     size_t size = 0; // number of currently contained values
     mutable std::optional<T> min;
 
@@ -23,7 +28,7 @@ public:
     BinomialHeap(const T& value);
     BinomialHeap(T&& value);
 
-    void mergeHeaps(BinomialHeap<T>& result, BinomialHeap<T>& lhs, BinomialHeap<T>& rhs); // O(lgn) where n = max(lhs.size, rhs.size)
+    friend void mergeHeaps<T>(BinomialHeap<T>& result, BinomialHeap<T>& lhs, BinomialHeap<T>& rhs); // O(lgn) where n = max(lhs.size, rhs.size)
 
     // O(1) amortized
     void insert(const T& value);
@@ -50,6 +55,7 @@ void BinomialHeap<T>::mergeWithCarry(BinomialTree<T>& carry, size_t carryRank, B
             rhs.pop_front();
 
             mergeWithCarry(newCarry, carryRank + 1, result, lhs, rhs);
+            return;
         }
         else if (carryRank == lhsRank)
         {
@@ -70,7 +76,8 @@ void BinomialHeap<T>::mergeWithCarry(BinomialTree<T>& carry, size_t carryRank, B
         }
     }
 
-    BinomialHeap<T> rest = !lhs.data.empty() ? lhs : rhs;
+    BinomialHeap<T>& rest = !lhs.data.empty() ? lhs : rhs;
+
     while (!rest.data.empty() && carryRank == rest.getRank())
     {
         carry = mergeTrees(carry, rest.data.front());
@@ -83,9 +90,12 @@ void BinomialHeap<T>::mergeWithCarry(BinomialTree<T>& carry, size_t carryRank, B
     result.push_back(carry);
     result.data.splice(result.data.end(), rest.data);
     result.size += rest.size;
+
+    rest.data.clear();
+    rest.size = 0;
 }
 template <typename T>
-void BinomialHeap<T>::mergeHeaps(BinomialHeap<T>& result, BinomialHeap<T>& lhs, BinomialHeap<T>& rhs)
+void mergeHeaps<T>(BinomialHeap<T>& result, BinomialHeap<T>& lhs, BinomialHeap<T>& rhs)
 {
     if (lhs.data.empty() || rhs.data.empty())
     {
@@ -126,7 +136,7 @@ void BinomialHeap<T>::mergeHeaps(BinomialHeap<T>& result, BinomialHeap<T>& lhs, 
         lhs.pop_front();
         rhs.pop_front();
 
-        mergeWithCarry(carry, lhsRank + 1, result, lhs, rhs);
+        result.mergeWithCarry(carry, lhsRank + 1, result, lhs, rhs);
     }
 }
 
