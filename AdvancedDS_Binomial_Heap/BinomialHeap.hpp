@@ -103,11 +103,17 @@ void mergeHeaps<T>(BinomialHeap<T>& result, BinomialHeap<T>& lhs, BinomialHeap<T
         {
             result.data.splice(result.data.end(), lhs.data);
             result.size += lhs.size;
+            
+            lhs.data.clear();
+            lhs.size = 0;
         }
         else
         {
             result.data.splice(result.data.end(), rhs.data);
             result.size += rhs.size;
+            
+            rhs.data.clear();
+            rhs.size = 0;
         }
         return;
     }
