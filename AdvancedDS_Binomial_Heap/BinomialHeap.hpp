@@ -11,7 +11,7 @@ template <typename T>
 class BinomialHeap
 {
 private:
-	std::list<BinomialTree<T>> data;
+    std::list<BinomialTree<T>> data;
     size_t size = 0; // number of currently contained values
     mutable std::optional<T> min;
 
