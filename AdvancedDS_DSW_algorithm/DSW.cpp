@@ -40,7 +40,7 @@ size_t closestLowerPowerOfTwo(size_t n)
 }
 
 template <typename T>
-size_t height(Node<T>* root)
+size_t height(const Node<T>* root)
 {
 	if (!root)
 		return 0;
@@ -137,10 +137,7 @@ bool DSW(Node<T>*& root)
 	}
 
 	// The tree should be balanced. The height of it (measured in number of edges) is expected to be log(# nodes).
-	if (ceil(log(nodesCount)) != height(root) - 1)
-		return false;
-
-	return true;
+	return !(ceil(log(nodesCount)) != height(root) - 1)
 }
 
 int main()
