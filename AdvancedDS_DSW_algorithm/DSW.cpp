@@ -136,8 +136,8 @@ bool DSW(Node<T>*& root)
 		}
 	}
 
-	// The tree should be balanced. The height of it (measured in number of edges) is expected to be log(#nodes).
-	return !(ceil(log(nodesCount)) != height(root) - 1)
+	// The tree should be balanced. The height of it (measured in number of edges) is expected to be log(# nodes).
+	return !(ceil(log(nodesCount)) != height(root) - 1);
 }
 
 int main()
