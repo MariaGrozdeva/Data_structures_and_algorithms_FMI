@@ -245,12 +245,6 @@ void Deque<T>::push_front_default()
 {
 	if (size == capacity)
 		resize(capacity * 2);
-	if (empty())
-	{
-		size++;
-		movePosition(tail, true);
-		return;
-	}
 
 	movePosition(head, false);
 	size++;
