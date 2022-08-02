@@ -42,11 +42,9 @@ public:
 
 	void push_back(const T& el);
 	void push_back(T&& el);
-	void push_back_default();
 
 	void push_front(const T& el);
 	void push_front(T&& el);
-	void push_front_default();
 
 	void pop_back();
 	void pop_front();
@@ -210,15 +208,6 @@ void Deque<T>::push_back(T&& el)
 	movePosition(tail, true);
 	size++;
 }
-template <typename T>
-void Deque<T>::push_back_default()
-{
-	if (size == capacity)
-		resize(capacity * 2);
-
-	movePosition(tail, true);
-	size++;
-}
 
 template <typename T>
 void Deque<T>::push_front(const T& el)
@@ -238,15 +227,6 @@ void Deque<T>::push_front(T&& el)
 
 	movePosition(head, false);
 	data[head] = std::move(el);
-	size++;
-}
-template <typename T>
-void Deque<T>::push_front_default()
-{
-	if (size == capacity)
-		resize(capacity * 2);
-
-	movePosition(head, false);
 	size++;
 }
 
