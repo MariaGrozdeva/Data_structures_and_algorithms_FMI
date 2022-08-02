@@ -36,29 +36,29 @@ private:
 	void shiftElementsForErasion(size_t index);
 
 public:
-	void insertAt(size_t index, const T& el);
-	void insertAt(size_t index, T&& el);
-	void eraseAt(size_t index);
+	void insertAt(size_t index, const T& el); // O(n)
+	void insertAt(size_t index, T&& el); // O(n)
+	void eraseAt(size_t index); // O(n)
 
-	void push_back(const T& el);
+	void push_back(const T& el); // O(1)
 	void push_back(T&& el);
 
-	void push_front(const T& el);
+	void push_front(const T& el); // O(1)
 	void push_front(T&& el);
 
-	void pop_back();
-	void pop_front();
+	void pop_back(); // O(1)
+	void pop_front(); // O(1)
 
-	const T& back() const;
-	const T& front() const;
-	T& back();
-	T& front();
+	const T& back() const; // O(1)
+	const T& front() const; // O(1)
+	T& back(); // O(1)
+	T& front(); // O(1)
 
-	const T& operator[](size_t index) const;
-	T& operator[](size_t index);
+	const T& operator[](size_t index) const; // O(1)
+	T& operator[](size_t index); // O(1)
 
-	bool empty() const;
-	size_t getSize() const;
+	bool empty() const; // O(1)
+	size_t getSize() const; // O(1)
 };
 
 template <typename T>
