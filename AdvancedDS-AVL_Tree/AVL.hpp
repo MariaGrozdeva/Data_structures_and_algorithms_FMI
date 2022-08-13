@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <cmath>
 #include <cassert>
-#include <vector>
 
 template <typename T>
 class AVL
@@ -12,391 +11,324 @@ class AVL
 private:
 	struct Node
 	{
-	public:
-		T* data;
-		size_t height;
+		T data;
 		size_t size;
 
+		// The size of the Node is a multiple of 4. Therefore instances of this structure will be stored in memory addresses such as
+		// 0x1000, 0x1004, 0x1008.., but never will be stored in 0x1001, 0x1002, 0x1003 or any other address
+		// that cannot be divisible by 4.
+		// All binary numbers that are multiples of 4 end with 00.
+		// In fact, this means that all pointers of type Node* always have their last two bits set to 0.
+		// Therefore balance factors will be hidden in these "free" bits with the following meanings:
+		// 0 - both subtrees are of same heights
+		// 1 - the tree is left-heavy
+		// 2 - the tree is right-heavy
 		Node* left;
 		Node* right;
-		Node* parent;
 
-		Node(const T& data) : data(new T(data)), height(1), size(1), left(nullptr), right(nullptr), parent(nullptr)
+		Node(const T& data) : data(data), size(1), left(nullptr), right(nullptr)
 		{}
-		Node(T&& data) : data(new T(std::move(data))), height(1), size(1), left(nullptr), right(nullptr), parent(nullptr)
+		Node(T&& data) : data(std::move(data)), size(1), left(nullptr), right(nullptr)
 		{}
-
-		Node(const Node& other)
-		{
-			copyFrom(other);
-		}
-		Node(Node&& other)
-		{
-			moveFrom(std::move(other));
-		}
-		Node& operator=(const Node& other)
-		{
-			if (this != &other)
-			{
-				free();
-				copyFrom(other);
-			}
-
-			return *this;
-		}
-		Node& operator=(Node&& other)
-		{
-			if (this != &other)
-			{
-				free();
-				moveFrom(std::move(other));
-			}
-
-			return *this;
-		}
-		~Node()
-		{
-			free();
-		}
-
-	private:
-		void copyFrom(const Node& other)
-		{
-			data = new T(*other.data);
-			height = other.height;
-			size = other.size;
-		}
-		void moveFrom(Node&& other)
-		{
-			data = other.data;
-			other.data = nullptr;
-			height = other.height;
-			other.height = 0;
-			size = other.size;
-			other.size = 0;
-		}
-		void free()
-		{
-			delete data;
-		}
-
-
-	public:
-		void swap(Node& other) // Swapping ONLY pointers.
-		{
-			std::swap(data, other.data);
-		}
-
-		size_t getHeight() const // The height of an empty node is 0.
-		{
-			if (!this)
-				return 0;
-
-			return height;
-		}
-		size_t getSize() const // The size of an empty node is 0.
-		{
-			if (!this)
-				return 0;
-
-			return size;
-		}
-
-		int getBalanceFactor() const // height(right) - height(left). If we want the tree to be AVL, then the balance factor should be in {-1,0,1}.
-		{
-			return right->getHeight() - left->getHeight();
-		}
-
-		void rotateLeft()
-		{
-			if (!this || !this->right)
-				return;
-
-			Node* originalRight = right;
-
-			swap(*right); // Swapping the data pointers of this and this->right.
-			right = originalRight->right;
-			originalRight->right = originalRight->left;
-			originalRight->left = left;
-			left = originalRight;
-
-			// Updating the heights of the affected (because of the rotation) nodes.
-			left->height = std::max(left->left->getHeight(), left->right->getHeight()) + 1;
-			height = std::max(left->getHeight(), right->getHeight()) + 1;
-
-			// Updating the sizes of the affected (because of the rotation) nodes.
-			left->size = left->left->getSize() + left->right->getSize() + 1;
-
-			// Updating the parents of the affected (because of the rotation) nodes.
-			updateParents();
-		}
-		void rotateRight()
-		{
-			if (!this || !this->left)
-				return;
-
-			Node* originalLeft = left;
-
-			swap(*left); // Swapping the data pointers of this and this->left.
-			left = originalLeft->left;
-			originalLeft->left = originalLeft->right;
-			originalLeft->right = right;
-			right = originalLeft;
-
-			// Updating the heights of the affected (because of the rotation) nodes.
-			right->height = std::max(right->left->getHeight(), right->right->getHeight()) + 1;
-			height = std::max(left->getHeight(), right->getHeight()) + 1;
-
-			// Updating the sizes of the affected (because of the rotation) nodes.
-			right->size = right->left->getSize() + right->right->getSize() + 1;
-
-			// Updating the parents of the affected (because of the rotation) nodes.
-			updateParents();
-		}
-
-	private:
-		void updateParents()
-		{
-			if (left)
-			{
-				left->parent = this;
-				if (left->left)
-					left->left->parent = left;
-				if (left->right)
-					left->right->parent = left;
-			}
-			if (right)
-			{
-				right->parent = this;
-				if (right->left)
-					right->left->parent = right;
-				if (right->right)
-					right->right->parent = right;
-			}
-		}
 	};
 
-	void copyFromRec(Node*& root, const Node* otherRoot);
-	void freeRec(Node* root);
+	void copyFromRec(Node*&, const Node*);
+	void freeRec(Node*);
 
-	void copyFrom(const AVL<T>& other);
-	void moveFrom(AVL<T>&& other);
+	void copyFrom(const AVL<T>&);
+	void moveFrom(AVL<T>&&);
 	void free();
 
 public:
-	AVL(std::initializer_list<T> iList);
+	AVL(std::initializer_list<T>);
 
 	AVL();
-	AVL(const AVL<T>& other);
-	AVL(AVL<T>&& other);
-	AVL<T>& operator=(const AVL<T>& other);
-	AVL<T>& operator=(AVL<T>&& other);
+	AVL(const AVL<T>&);
+	AVL(AVL<T>&&);
+	AVL<T>& operator=(const AVL<T>&);
+	AVL<T>& operator=(AVL<T>&&);
 	~AVL();
 
-
 private:
-	void leftLeftCase(Node* current);
-	void rightRightCase(Node* current);
-	void leftRightCase(Node* current);
-	void rightLeftCase(Node* current);
+	void rotateLeft(Node*&);
+	void rotateRight(Node*&);
 
-	void update(Node* current);
+	void leftLeftCase(Node*&);
+	void rightRightCase(Node*&);
+	void leftRightCase(Node*&);
+	void rightLeftCase(Node*&);
 
-	void findMax(Node* root, Node*& maxNode) const;
-	void eraseRec(Node*& root, const T& el);
+	void updateBfsAndMakeRotations(Node*&, bool);
+	void updateBalanceFactors(Node*&, bool&, bool, bool = true);
 
-	bool containsRec(Node* root, const T& el, Node*& parent) const;
+	bool insertRec(Node*&, const T&, bool&);
+	bool insertRec(Node*&, T&&, bool&);
 
-	T& dos(size_t index, const Node* root);
-	const T& dos(size_t index, const Node* root) const;
+	Node*& findMax(Node*&, bool&);
+	bool deletionAndUpdate(Node*&, bool&);
+	bool eraseRec(Node*&, const T&, bool&, bool);
+
+	bool containsRec(const Node*, const T&) const;
+
+	T& dos(size_t, Node*);
+	const T& dos(size_t, const Node*) const;
 
 public:
 	Node* root = nullptr;
 
-	void insert(const T& el);
-	void insert(T&& el);
-	void erase(const T& el);
+	bool insert(const T&);
+	bool insert(T&&);
 
-	bool contains(const T& el) const;
+	bool erase(const T&);
+
+	bool contains(const T&) const;
 	bool empty() const;
+	size_t size() const;
 
-	T& operator[](size_t index);
-	const T& operator[](size_t index) const;
+	T& operator[](size_t);
+	const T& operator[](size_t) const;
 };
 
 template <typename T>
-void AVL<T>::leftLeftCase(Node* current)
+bool AVL<T>::insertRec(Node*& root, const T& el, bool& existBfZero)
 {
-	current->rotateRight();
-}
-template <typename T>
-void AVL<T>::rightRightCase(Node* current)
-{
-	current->rotateLeft();
-}
-template <typename T>
-void AVL<T>::leftRightCase(Node* current)
-{
-	current->left->rotateLeft();
-	current->rotateRight();
-}
-template <typename T>
-void AVL<T>::rightLeftCase(Node* current)
-{
-	current->right->rotateRight();
-	current->rotateLeft();
-}
-
-template <typename T>
-void AVL<T>::update(Node* current)
-{
-	if (!current)
-		return;
-
-	current->height = 1 + std::max(current->left->getHeight(), current->right->getHeight());
-	current->size = 1 + current->left->getSize() + current->right->getSize();
-
-	int balanceFactor = current->getBalanceFactor();
-
-	// If the current node becomes unbalanced, then there are 4 cases:
-	if (balanceFactor == -2 && current->left->getBalanceFactor() <= 0)
-		leftLeftCase(current);
-
-	else if (balanceFactor == 2 && current->right->getBalanceFactor() >= 0)
-		rightRightCase(current);
-
-	else if (balanceFactor == -2 && current->left->getBalanceFactor() >= 0)
-		leftRightCase(current);
-
-	else if (balanceFactor == 2 && current->right->getBalanceFactor() <= 0)
-		rightLeftCase(current);
-
-	update(current->parent); // Keep going up the tree and updating heights and balance factors.
-}
-
-template <typename T>
-void AVL<T>::insert(const T& el)
-{
+	bool toLeft = false;
 	if (!root)
 	{
 		root = new Node(el);
-		return;
+		return true;
 	}
 
-	Node* parent = nullptr;
-	bool found = containsRec(root, el, parent);
-	if (found)
-		return;
+	if (root->data > el)
+	{
+		short int oldBf = getBf(root->left);
+		cleansePointer(root->left);
 
-	Node* newNode = new Node(el);
-	if (*(parent->data) > el)
-		parent->left = newNode;
+		bool res = insertRec(root->left, el, existBfZero);
+
+		putBf(root->left, oldBf);
+
+		if (res)
+		{
+			toLeft = true;
+			root->size++;
+			updateBalanceFactors(root, existBfZero, toLeft);
+		}
+		return res;
+	}
+	else if (root->data < el)
+	{
+		bool res = insertRec(root->right, el, existBfZero);
+
+		if (res)
+		{
+			toLeft = false;
+			root->size++;
+			updateBalanceFactors(root, existBfZero, toLeft);
+		}
+		return res;
+	}
 	else
-		parent->right = newNode;
-
-	newNode->parent = parent;
-
-	update(parent); // Maintain the tree to be AVL. In this update we make <= 2 rotations.
+	{
+		return false;
+	}
 }
 template <typename T>
-void AVL<T>::insert(T&& el)
+bool AVL<T>::insert(const T& el)
 {
+	bool existBfZero = false;
+	return insertRec(root, el, existBfZero);
+}
+template <typename T>
+bool AVL<T>::insertRec(Node*& root, T&& el, bool& existBfZero)
+{
+	bool toLeft = false;
 	if (!root)
 	{
 		root = new Node(std::move(el));
-		return;
+		return true;
 	}
 
-	Node* parent = nullptr;
-	bool found = containsRec(root, el, parent);
-	if (found)
-		return;
-
-	Node* newNode = new Node(std::move(el));
-	if (*(parent->data) > el)
-		parent->left = newNode;
-	else
-		parent->right = newNode;
-
-	newNode->parent = parent;
-
-	update(parent);
-}
-
-template <typename T>
-void AVL<T>::findMax(Node* root, Node*& maxNode) const
-{
-	Node* iter = root;
-	while (iter)
+	if (root->data > el)
 	{
-		maxNode = iter;
-		iter = iter->right;
+		short int oldBf = getBf(root->left);
+		cleansePointer(root->left);
+
+		bool res = insertRec(root->left, std::move(el), existBfZero);
+
+		putBf(root->left, oldBf);
+
+		if (res)
+		{
+			toLeft = true;
+			root->size++;
+			updateBalanceFactors(root, existBfZero, toLeft);
+		}
+		return res;
+	}
+	else if (root->data < el)
+	{
+		bool res = insertRec(root->right, std::move(el), existBfZero);
+
+		if (res)
+		{
+			toLeft = false;
+			root->size++;
+			updateBalanceFactors(root, existBfZero, toLeft);
+		}
+		return res;
+	}
+	else
+	{
+		return false;
 	}
 }
 template <typename T>
-void AVL<T>::eraseRec(Node*& root, const T& el)
+bool AVL<T>::insert(T&& el)
 {
-	if (!root)
-		return;
+	bool existBfZero = false;
+	return insertRec(root, std::move(el), existBfZero);
+}
 
-	Node* parent = nullptr;
-	if (!containsRec(root, el, parent))
-		return;
+template <typename T>
+typename AVL<T>::Node*& AVL<T>::findMax(Node*& root, bool& existBfZero)
+{
+	if (!root->right)
+	{
+		if (root->left)
+		{
+			root->size--;
+			updateBalanceFactors(root, existBfZero, true, false);
+		}
+		return root;
+	}
 
-	Node*& toErase = parent == nullptr ? root :
-		el < *parent->data ? parent->left : parent->right;
+	Node*& maxNode = findMax(root->right, existBfZero);
+	root->size--;
+	updateBalanceFactors(root, existBfZero, false, false);
+	return maxNode;
+}
+template <typename T>
+bool AVL<T>::deletionAndUpdate(Node*& root, bool& existBfZero)
+{
+	Node* rootLeftCleaned = getCleanedPointer(root->left);
+	root->size--;
 
 	// remove leaf
-	if (!toErase->left && !toErase->right)
+	if (!rootLeftCleaned && !root->right)
 	{
-		Node* toEraseParent = toErase->parent;
-		delete toErase;
-		toErase = nullptr;
-
-		update(toEraseParent); // Maintain the tree to be AVL. In this update we can make up to O(h) rotations. Therefore deletion of an element in AVL
-		                       // is slower than insertion. If we have a lot of deletions (and insertions), Red–black trees are preferred over AVL trees.
+		delete root;
+		root = nullptr;
 	}
-
-	// remove node with only left child (this child is certainly a leaf because the tree is AVL (otherwise, the tree wouldn't be balanced).
-	else if (toErase->left && !toErase->right)
+	// remove node with only left or right child
+	else if ((rootLeftCleaned && !root->right) || (!rootLeftCleaned && root->right))
 	{
-		toErase->swap(*toErase->left);
-		eraseRec(toErase->left, el);
+		Node* toDelete = rootLeftCleaned ? rootLeftCleaned : root->right;
+		swapPointers(root, toDelete);
+		delete toDelete;
 	}
-	// remove node with only right child (this child is certainly a leaf because the tree is AVL (otherwise, the tree wouldn't be balanced).
-	else if (!toErase->left && toErase->right)
-	{
-		toErase->swap(*toErase->right);
-		eraseRec(toErase->right, el);
-	}
-
 	// remove node with left and right children
 	else
 	{
-		Node* maxNode;
-		findMax(toErase->left, maxNode);
-		toErase->swap(*maxNode);
-		eraseRec(toErase->left, el);
-	}
-}
-template <typename T>
-void AVL<T>::erase(const T& el)
-{
-	eraseRec(root, el);
-}
+		short int oldBf = getBf(root->left);
+		cleansePointer(root->left);
 
+		Node*& maxNode = findMax(root->left, existBfZero);
+
+		Node* oldRootLeft = root->left;
+		Node* oldRootRight = root->right;
+		Node* oldMaxNodeLeft = maxNode->left;
+
+		if (maxNode == root->left) // the case in which root and maxNode are adjacent
+		{
+			Node* maxNodeNotRef = maxNode;
+			swapPointers(root, maxNodeNotRef);
+			std::swap(root->size, maxNodeNotRef->size);
+
+			root->left = maxNodeNotRef;
+			root->right = oldRootRight;
+			maxNodeNotRef->left = oldMaxNodeLeft;
+			maxNodeNotRef->right = nullptr;
+
+			deletionAndUpdate(root->left, existBfZero);
+		}
+		else
+		{
+			swapPointers(root, maxNode);
+			std::swap(root->size, maxNode->size);
+
+			root->left = oldRootLeft;
+			root->right = oldRootRight;
+			maxNode->left = oldMaxNodeLeft;
+			maxNode->right = nullptr;
+
+			deletionAndUpdate(maxNode, existBfZero);
+		}
+		putBf(root->left, oldBf);
+		updateBalanceFactors(root, existBfZero, true, false);
+	}
+	return true;
+}
 template <typename T>
-bool AVL<T>::containsRec(Node* root, const T& el, Node*& parent) const
+bool AVL<T>::eraseRec(Node*& root, const T& el, bool& existBfZero, bool toLeft)
 {
 	if (!root)
 		return false;
-	if (*(root->data) == el)
+
+	if (root->data > el)
+	{
+		short int oldBf = getBf(root->left);
+		cleansePointer(root->left);
+
+		toLeft = true;
+		bool res = eraseRec(root->left, el, existBfZero, toLeft);
+
+		putBf(root->left, oldBf);
+
+		if (res)
+		{
+			root->size--;
+			updateBalanceFactors(root, existBfZero, toLeft, false);
+		}
+		return res;
+	}
+	else if (root->data < el)
+	{
+		toLeft = false;
+		bool res = eraseRec(root->right, el, existBfZero, toLeft);
+
+		if (res)
+		{
+			root->size--;
+			updateBalanceFactors(root, existBfZero, toLeft, false);
+		}
+		return res;
+	}
+	else
+	{
+		return deletionAndUpdate(root, existBfZero);
+	}
+}
+template <typename T>
+bool AVL<T>::erase(const T& el)
+{
+	bool existBfZero = true;
+	bool toLeft = false;
+	return eraseRec(root, el, existBfZero, toLeft);
+}
+
+template <typename T>
+bool AVL<T>::containsRec(const Node* root, const T& el) const
+{
+	if (!root)
+		return false;
+	if (root->data == el)
 		return true;
 
-	parent = root;
-	if (*(root->data) > el)
-		return containsRec(root->left, el, parent);
-	containsRec(root->right, el, parent);
+	if (root->data > el)
+		return containsRec(getCleanedPointer(root->left), el);
+	else
+		return containsRec(root->right, el);
 }
 template <typename T>
 bool AVL<T>::contains(const T& el) const
@@ -409,17 +341,25 @@ bool AVL<T>::empty() const
 {
 	return root == nullptr;
 }
+template <typename T>
+size_t AVL<T>::size() const
+{
+	return root ? root->size : 0;
+}
 
 // Allowing index for logarithmic time.
 template <typename T>
-T& AVL<T>::dos(size_t index, const Node* root)
+T& AVL<T>::dos(size_t index, Node* root)
 {
-	if (root->left->getSize() == index)
-		return *(root->data);
-	if (root->left->getSize() > index)
-		return dos(index, root->left);
+	size_t rightSize = root->right ? root->right->size : 0;
+	size_t leftSize = root->size - rightSize - 1;
+
+	if (leftSize == index)
+		return root->data;
+	else if (leftSize > index)
+		return dos(index, getCleanedPointer(root->left));
 	else
-		return dos(index - root->left->getSize() - 1, root->right);
+		return dos(index - leftSize - 1, root->right);
 }
 template <typename T>
 T& AVL<T>::operator[](size_t index)
@@ -431,18 +371,159 @@ T& AVL<T>::operator[](size_t index)
 template <typename T>
 const T& AVL<T>::dos(size_t index, const Node* root) const
 {
-	if (root->left->getSize() == index)
-		return *(root->data);
-	if (root->left->getSize() > index)
-		return dos(index, root->left);
+	size_t rightSize = root->right ? root->right->size : 0;
+	size_t leftSize = root->size - rightSize - 1;
+
+	if (leftSize == index)
+		return root->data;
+	else if (leftSize > index)
+		return dos(index, getCleanedPointer(root->left));
 	else
-		return dos(index - root->left->getSize() - 1, root->right);
+		return dos(index - leftSize - 1, root->right);
 }
 template <typename T>
 const T& AVL<T>::operator[](size_t index) const
 {
 	assert(root && index < root->size);
 	return dos(index, root);
+}
+
+template <typename T>
+void AVL<T>::rotateLeft(Node*& root)
+{
+	if (!root || !root->right)
+		return;
+
+	short int bf = getBf(root->left);
+	short int rootBf = bf == 3 ? 2 : bf; // in the left rotation the invalid balance factor 3 means 2
+	short int rootRightBf = getBf(root->right->left);
+
+	cleansePointer(root->right->left);
+
+	size_t rightSize = root->right->size;
+	Node* originalRoot = root;
+	Node* originalRootRightLeft = root->right->left;
+
+	root = root->right;
+	root->left = originalRoot;
+	originalRoot->right = originalRootRightLeft;
+
+	// Updating the sizes and balance factors of the affected (because of the rotation) nodes.
+	root->size = originalRoot->size;
+	root->left->size = originalRootRightLeft ? root->size - rightSize + originalRootRightLeft->size : root->size - rightSize;
+	
+	putBf(root->left->left, rootBf - 1 - std::max<short int>(rootRightBf, 0));
+	putBf(root->left, rootRightBf - 1 + std::min<short int>(getBf(root->left->left), 0));
+}
+template <typename T>
+void AVL<T>::rotateRight(Node*& root)
+{
+	if (!root || !getCleanedPointer(root->left))
+		return;
+
+	short int bf = getBf(root->left);
+	short int rootBf = bf == 3 ? -2 : bf; // in the right rotation the invalid balance factor 3 means -2
+	short int rootLeftBf = getBf(getCleanedPointer(root->left)->left);
+
+	cleansePointer(root->left);
+	cleansePointer(root->left->right);
+
+	size_t leftSize = root->left->size;
+	Node* originalRoot = root;
+	Node* originalRootLeftRight = root->left->right;
+
+	root = root->left;
+	root->right = originalRoot;
+	originalRoot->left = originalRootLeftRight;
+
+	// Updating the sizes and balance factors of the affected (because of the rotation) nodes.
+	root->size = originalRoot->size;
+	root->right->size = originalRootLeftRight ? root->size - leftSize + originalRootLeftRight->size : root->size - leftSize;
+
+	putBf(root->right->left, rootBf + 1 - std::min<short int>(rootLeftBf, 0));
+	putBf(root->left, rootLeftBf + 1 + std::max<short int>(getBf(root->right->left), 0));
+}
+
+template <typename T>
+void AVL<T>::leftLeftCase(Node*& root)
+{
+	cleansePointer(root); // root may be the left child of other node
+	rotateRight(root);
+}
+template <typename T>
+void AVL<T>::rightRightCase(Node*& root)
+{
+	cleansePointer(root); // root may be the left child of other node
+	rotateLeft(root);
+}
+template <typename T>
+void AVL<T>::leftRightCase(Node*& root)
+{
+	cleansePointer(root); // root may be the left child of other node
+	short int oldBf = getBf(root->left);
+	cleansePointer(root->left);
+
+	rotateLeft(root->left);
+	putBf(root->left, oldBf);
+	rotateRight(root);
+}
+template <typename T>
+void AVL<T>::rightLeftCase(Node*& root)
+{
+	cleansePointer(root); // root may be the left child of other node
+
+	rotateRight(root->right);
+	rotateLeft(root);
+}
+
+template <typename T>
+void AVL<T>::updateBfsAndMakeRotations(Node*& root, bool shouldDecreaseBf)
+{
+	Node* cleanedRoot = getCleanedPointer(root); // root may be the left child of other node
+	short int currentBf = getBf(cleanedRoot->left);
+
+	if (shouldDecreaseBf)
+		currentBf--;
+	else
+		currentBf++;
+
+	if (currentBf != -2 && currentBf != 2) // Balance factor is valid.
+	{
+		putBf(root->left, currentBf);
+	}
+	else // Balance factor is -2 or 2 (invalid!). A rotation must be done.
+	{
+		if (shouldDecreaseBf) // bf is -2
+		{
+			putBf(root->left, 3); // 3 represents the invalid balance factors (-2 and 2))
+			if (getBf(getCleanedPointer(cleanedRoot->left)->left) <= 0)
+				leftLeftCase(root);
+			else if (getBf(getCleanedPointer(cleanedRoot->left)->left) >= 0)
+				leftRightCase(root);
+		}
+		else // bf is 2
+		{
+			putBf(root->left, 3);
+			if (getBf(cleanedRoot->right->left) >= 0)
+				rightRightCase(root);
+			else if (getBf(cleanedRoot->right->left) <= 0)
+				rightLeftCase(root);
+		}
+	}
+}
+template <typename T>
+void AVL<T>::updateBalanceFactors(Node*& root, bool& existBfZero, bool toLeft, bool calledFromInsert)
+{
+	// We use existBfZero in order to check if the height has changed (it has changed if there is NOT bf = 0).
+	if ((existBfZero && calledFromInsert) || (!existBfZero && !calledFromInsert))
+		return;
+
+	if ((toLeft && calledFromInsert) || (!toLeft && !calledFromInsert))
+		updateBfsAndMakeRotations(root, true);
+	else if ((!toLeft && calledFromInsert) || (toLeft && !calledFromInsert))
+		updateBfsAndMakeRotations(root, false);
+
+	existBfZero = (getBf(root->left) == 0);
 }
 
 template <typename T>
@@ -525,16 +606,13 @@ void AVL<T>::copyFromRec(Node*& root, const Node* otherRoot)
 		return;
 	}
 
-	root = new Node(*otherRoot);
-	root->parent = nullptr;
+	root = new Node(otherRoot->data);
+	root->size = otherRoot->size;
 
-	copyFromRec(root->left, otherRoot->left);
+	copyFromRec(root->left, getCleanedPointer(otherRoot->left));
 	copyFromRec(root->right, otherRoot->right);
 
-	if (root->left)
-		root->left->parent = root;
-	if (root->right)
-		root->right->parent = root;
+	putBf(root->left, getBf(otherRoot->left));
 }
 template <typename T>
 void AVL<T>::freeRec(Node* root)
@@ -542,8 +620,77 @@ void AVL<T>::freeRec(Node* root)
 	if (!root)
 		return;
 
-	freeRec(root->left);
+	freeRec(getCleanedPointer(root->left));
 	freeRec(root->right);
 
 	delete root;
 }
+
+// --------------------------------------------
+// Hides the bf in the pointer ptr.
+// If bf is 0, it is hidden in the pointer as 0. If bf is -1, it is hidden as 1. If bf is 1, it is hidden as 2.
+template <typename P>
+void putBf(P*& ptr, short int bf)
+{
+	if (bf == 0)
+	{
+		cleansePointer(ptr);
+		return;
+	}
+	else if (bf == -1)
+		bf = 1;
+	else if (bf == 1)
+		bf = 2;
+
+	assert(bf < 4); // 3 can be put (this will represent the invalid balance factors (-2 and 2))
+	cleansePointer(ptr);
+	uintptr_t ptrWithHiddenBf = (uintptr_t)ptr | bf;
+	ptr = (P*)ptrWithHiddenBf;
+}
+
+// Extracts the hidden bf from the pointer ptr.
+// Returns -1 if the tree is left-heavy, 0 if both subtrees are of same heights, 1 if the tree is right-heavy.
+template <typename P>
+short int getBf(P* ptr)
+{
+	unsigned short int bf = (unsigned short int)((uintptr_t)ptr & 3);
+	assert(bf < 4); // 3 can be a hidden bf (this represents the invalid balance factors (-2 and 2))
+
+	if (bf == 0)
+		return 0;
+	else if (bf == 1)
+		return -1;
+	else if (bf == 2)
+		return 1;
+	else
+		return bf;
+}
+
+// Removes the hidden bf from the pointer ptr.
+template <typename P>
+void cleansePointer(P*& ptr)
+{
+	uintptr_t cleaned = (uintptr_t)ptr & ~3;
+	ptr = (P*)cleaned;
+}
+// Returns the original pointer ptr (without the hidden bf).
+template <typename P>
+P* getCleanedPointer(P* ptr)
+{
+	return (P*)((uintptr_t)ptr & ~3);
+}
+
+template <typename P>
+void swapPointers(P*& left, P*& right)
+{
+	// swap balance factors (to KEEP THE ORIGINAL ONES!)
+	short int tempBf = getBf(left);
+	putBf(left, getBf(right));
+	putBf(right, tempBf);
+
+	// swap pointers
+	P* tempPtr = left;
+	left = right;
+	right = tempPtr;
+}
+// --------------------------------------------
