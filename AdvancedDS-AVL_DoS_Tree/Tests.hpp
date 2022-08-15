@@ -111,7 +111,7 @@ bool testEraseNodesWithTwoChildren()
 	return true;
 }
 
-bool eraseRandom()
+bool testEraseRandom()
 {
 	AVL<int> avl;
 
@@ -175,6 +175,6 @@ void runTests()
 	std::cout << "Test 4: " << testInsertWithLeftRightRotationsAndRightLeftRotations() << std::endl;
 	std::cout << "Test 5: " << testEraseOnlyLeavesAndNodesWithOneChild() << std::endl;
 	std::cout << "Test 6: " << testEraseNodesWithTwoChildren() << std::endl;
-	std::cout << "Test 7: " << eraseRandom() << std::endl;
+	std::cout << "Test 7: " << testEraseRandom() << std::endl;
 	std::cout << "Test 8: " << testCopy() << std::endl;
 }
