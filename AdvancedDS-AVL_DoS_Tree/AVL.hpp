@@ -394,9 +394,8 @@ void AVL<T>::rotateLeft(Node*& root)
 	if (!root || !root->right)
 		return;
 
-	short int bf = getBf(root->left);
-	short int rootBf = bf == 3 ? 2 : bf; // in the left rotation the invalid balance factor 3 means 2
-	short int rootRightBf = getBf(root->right->left);
+	short int rootBf = getBf(root->left) == 3 ? 2 : getBf(root->left); // in the left rotation the invalid balance factor 3 means 2
+	short int rootRightBf = getBf(root->right->left) == 3 ? 2 : getBf(root->right->left);
 
 	cleansePointer(root->right->left);
 
@@ -421,9 +420,8 @@ void AVL<T>::rotateRight(Node*& root)
 	if (!root || !getCleanedPointer(root->left))
 		return;
 
-	short int bf = getBf(root->left);
-	short int rootBf = bf == 3 ? -2 : bf; // in the right rotation the invalid balance factor 3 means -2
-	short int rootLeftBf = getBf(getCleanedPointer(root->left)->left);
+	short int rootBf = getBf(root->left) == 3 ? -2 : getBf(root->left); // in the right rotation the invalid balance factor 3 means -2
+	short int rootLeftBf = getBf(getCleanedPointer(root->left)->left) == 3 ? -2 : getBf(getCleanedPointer(root->left)->left);
 
 	cleansePointer(root->left);
 	cleansePointer(root->left->right);
@@ -495,7 +493,7 @@ void AVL<T>::updateBfsAndMakeRotations(Node*& root, bool shouldDecreaseBf)
 	{
 		if (shouldDecreaseBf) // bf is -2
 		{
-			putBf(root->left, 3); // 3 represents the invalid balance factors (-2 and 2))
+			putBf(root->left, -2);
 			if (getBf(getCleanedPointer(cleanedRoot->left)->left) <= 0)
 				leftLeftCase(root);
 			else if (getBf(getCleanedPointer(cleanedRoot->left)->left) >= 0)
@@ -503,7 +501,7 @@ void AVL<T>::updateBfsAndMakeRotations(Node*& root, bool shouldDecreaseBf)
 		}
 		else // bf is 2
 		{
-			putBf(root->left, 3);
+			putBf(root->left, 2);
 			if (getBf(cleanedRoot->right->left) >= 0)
 				rightRightCase(root);
 			else if (getBf(cleanedRoot->right->left) <= 0)
@@ -629,6 +627,7 @@ void AVL<T>::freeRec(Node* root)
 // --------------------------------------------
 // Hides the bf in the pointer ptr.
 // If bf is 0, it is hidden in the pointer as 0. If bf is -1, it is hidden as 1. If bf is 1, it is hidden as 2.
+// If bf is -2 or 2 (invalid balance factors which should be temporarily put to show that a rotation must be done), it is hidden as 3.
 template <typename P>
 void putBf(P*& ptr, short int bf)
 {
@@ -641,8 +640,10 @@ void putBf(P*& ptr, short int bf)
 		bf = 1;
 	else if (bf == 1)
 		bf = 2;
+	else if (bf == -2 || bf == 2)
+		bf = 3;
 
-	assert(bf < 4); // 3 can be put (this will represent the invalid balance factors (-2 and 2))
+	assert(bf < 4);
 	cleansePointer(ptr);
 	uintptr_t ptrWithHiddenBf = (uintptr_t)ptr | bf;
 	ptr = (P*)ptrWithHiddenBf;
@@ -654,7 +655,7 @@ template <typename P>
 short int getBf(P* ptr)
 {
 	unsigned short int bf = (unsigned short int)((uintptr_t)ptr & 3);
-	assert(bf < 4); // 3 can be a hidden bf (this represents the invalid balance factors (-2 and 2))
+	assert(bf < 4);
 
 	if (bf == 0)
 		return 0;
