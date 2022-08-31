@@ -631,11 +631,10 @@ void AVL<T>::freeRec(Node* root)
 template <typename P>
 void putBf(P*& ptr, short int bf)
 {
+	cleansePointer(ptr);
+
 	if (bf == 0)
-	{
-		cleansePointer(ptr);
 		return;
-	}
 	else if (bf == -1)
 		bf = 1;
 	else if (bf == 1)
@@ -644,7 +643,6 @@ void putBf(P*& ptr, short int bf)
 		bf = 3;
 
 	assert(bf < 4);
-	cleansePointer(ptr);
 	uintptr_t ptrWithHiddenBf = (uintptr_t)ptr | bf;
 	ptr = (P*)ptrWithHiddenBf;
 }
