@@ -20,7 +20,7 @@ private:
 	void movePosition(size_t&, bool) const;
 
 public:
-	Deque();
+	Deque() = default;
 	Deque(const Deque<T>&);
 	Deque(Deque<T>&&);
 	Deque<T>& operator=(const Deque<T>&);
@@ -192,15 +192,6 @@ void Deque<T>::movePosition(size_t& currPosition, bool moveForward) const
 	}
 }
 
-template <typename T>
-Deque<T>::Deque()
-{
-	elementsCount = 0;
-	capacity = 4;
-	data = new T[capacity];
-
-	head = tail = 0;
-}
 template <typename T>
 Deque<T>::Deque(const Deque<T>& other)
 {
