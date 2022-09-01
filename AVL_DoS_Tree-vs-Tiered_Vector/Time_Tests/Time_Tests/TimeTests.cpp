@@ -14,7 +14,6 @@ void testPushBack(const std::string& name)
 		throw "Error";
 
 	const int maxOperations = 1'000'000;
-	int dontOptimize = 0x1234;
 
 	file << "Count:, Average:, Per element:" << std::endl;
 
@@ -38,7 +37,6 @@ void testPushBack(const std::string& name)
 			const auto duration = end - start;
 
 			total += duration;
-			dontOptimize ^= container.size();
 		}
 
 		const auto average = std::chrono::duration_cast<std::chrono::nanoseconds>(total).count() / repeats;
@@ -61,7 +59,6 @@ void testPushBack(const std::string& name)
 	{
 		tester(elements);
 	}
-	std::cout << dontOptimize;
 }
 template <typename T>
 void testInsert(const std::string& name)
@@ -71,7 +68,6 @@ void testInsert(const std::string& name)
 		throw "Error";
 
 	const int maxOperations = 1'000'000;
-	int dontOptimize = 0x1234;
 
 	file << "Count:, Average:, Per element:" << std::endl;
 
@@ -98,7 +94,6 @@ void testInsert(const std::string& name)
 			const auto duration = end - start;
 
 			total += duration;
-			dontOptimize ^= container.size();
 		}
 
 		const auto average = std::chrono::duration_cast<std::chrono::nanoseconds>(total).count() / repeats;
@@ -121,7 +116,6 @@ void testInsert(const std::string& name)
 	{
 		tester(elements);
 	}
-	std::cout << dontOptimize;
 }
 
 template <typename T>
@@ -132,7 +126,6 @@ void testPopFront(const std::string& name)
 		throw "Error";
 
 	const int maxOperations = 1'000'000;
-	int dontOptimize = 0x1234;
 
 	file << "Count:, Average:, Per element:" << std::endl;
 
@@ -160,7 +153,6 @@ void testPopFront(const std::string& name)
 			const auto duration = end - start;
 
 			total += duration;
-			dontOptimize ^= container.size();
 		}
 
 		const auto average = std::chrono::duration_cast<std::chrono::nanoseconds>(total).count() / repeats;
@@ -183,7 +175,6 @@ void testPopFront(const std::string& name)
 	{
 		tester(elements);
 	}
-	std::cout << dontOptimize;
 }
 template <typename T>
 void testErase(const std::string& name)
@@ -193,7 +184,6 @@ void testErase(const std::string& name)
 		throw "Error";
 
 	const int maxOperations = 1'000'000;
-	int dontOptimize = 0x1234;
 
 	file << "Count:, Average:, Per element:" << std::endl;
 
@@ -230,7 +220,6 @@ void testErase(const std::string& name)
 			const auto duration = end - start;
 
 			total += duration;
-			dontOptimize ^= container.size();
 		}
 
 		const auto average = std::chrono::duration_cast<std::chrono::nanoseconds>(total).count() / repeats;
@@ -253,7 +242,6 @@ void testErase(const std::string& name)
 	{
 		tester(elements);
 	}
-	std::cout << dontOptimize;
 }
 
 template <typename T>
