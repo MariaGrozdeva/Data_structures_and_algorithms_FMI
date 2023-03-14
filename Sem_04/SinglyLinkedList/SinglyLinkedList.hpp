@@ -127,7 +127,7 @@ bool SinglyLinkedList<T>::empty() const
 }
 
 template <typename T>
-SinglyLinkedList<T> concat(SinglyLinkedList<T>& lhs, SinglyLinkedList<T>& rhs)
+SinglyLinkedList<T> concat(SinglyLinkedList<T>& lhs, SinglyLinkedList<T>& rhs) // suppose lhs and rhs are different
 {
 	SinglyLinkedList<T> result;
 
@@ -218,6 +218,7 @@ template <typename T>
 void SinglyLinkedList<T>::moveFrom(SinglyLinkedList<T>&& other)
 {
 	this->head = other.head;
+	this->tail = other.tail;
 	other.head = other.tail = nullptr;
 }
 
