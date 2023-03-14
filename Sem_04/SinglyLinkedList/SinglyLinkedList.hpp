@@ -22,12 +22,20 @@ private:
 
 public:
 	SinglyLinkedList();
+	SinglyLinkedList(std::initializer_list<T>);
+	
 	SinglyLinkedList(const SinglyLinkedList<T>& other);
+	SinglyLinkedList(SinglyLinkedList<T>&& other) noexcept;
+
 	SinglyLinkedList<T>& operator=(const SinglyLinkedList<T>& other);
+	SinglyLinkedList<T>& operator=(SinglyLinkedList<T>&& other) noexcept;
+
 	~SinglyLinkedList();
 
 private:
 	void copyFrom(const SinglyLinkedList<T>& other);
+	void moveFrom(SinglyLinkedList<T>&& other);
+
 	void free();
 
 public:
@@ -38,13 +46,14 @@ public:
 
 	const T& front();
 	const T& back();
-	
+
 	bool empty() const;
 
 	template <typename U>
 	friend SinglyLinkedList<U> concat(SinglyLinkedList<U>& lhs, SinglyLinkedList<U>& rhs);
 
-	void print() const; // O(n) complexity!
+	template <typename U>
+	friend std::ostream& operator<<(std::ostream&, const SinglyLinkedList<U>&);
 };
 
 template <typename T>
@@ -150,10 +159,23 @@ SinglyLinkedList<T>::SinglyLinkedList()
 	head = tail = nullptr;
 }
 template <typename T>
+SinglyLinkedList<T>::SinglyLinkedList(std::initializer_list<T> iList)
+{
+	for (const T& el : iList)
+		push_back(el);
+}
+
+template <typename T>
 SinglyLinkedList<T>::SinglyLinkedList(const SinglyLinkedList<T>& other)
 {
 	copyFrom(other);
 }
+template <typename T>
+SinglyLinkedList<T>::SinglyLinkedList(SinglyLinkedList<T>&& other) noexcept
+{
+	moveFrom(std::move(other));
+}
+
 template <typename T>
 SinglyLinkedList<T>& SinglyLinkedList<T>::operator=(const SinglyLinkedList<T>& other)
 {
@@ -162,9 +184,19 @@ SinglyLinkedList<T>& SinglyLinkedList<T>::operator=(const SinglyLinkedList<T>& o
 		free();
 		copyFrom(other);
 	}
-
 	return *this;
 }
+template <typename T>
+SinglyLinkedList<T>& SinglyLinkedList<T>::operator=(SinglyLinkedList<T>&& other) noexcept
+{
+	if (this != &other)
+	{
+		free();
+		moveFrom(std::move(other));
+	}
+	return *this;
+}
+
 template <typename T>
 SinglyLinkedList<T>::~SinglyLinkedList()
 {
@@ -183,6 +215,13 @@ void SinglyLinkedList<T>::copyFrom(const SinglyLinkedList<T>& other)
 	}
 }
 template <typename T>
+void SinglyLinkedList<T>::moveFrom(SinglyLinkedList<T>&& other)
+{
+	this->head = other.head;
+	other.head = other.tail = nullptr;
+}
+
+template <typename T>
 void SinglyLinkedList<T>::free()
 {
 	Node* iter = head;
@@ -193,20 +232,22 @@ void SinglyLinkedList<T>::free()
 		iter = iter->next;
 		delete toDelete;
 	}
-	
+
 	head = tail = nullptr;
 }
 
 template <typename T>
-void SinglyLinkedList<T>::print() const
+std::ostream& operator<<(std::ostream& os, const SinglyLinkedList<T>& l)
 {
-	Node* iter = head;
+	typename SinglyLinkedList<T>::Node* iter = l.head;
 
 	while (iter)
 	{
-		cout << iter->data << ' ';
+		os << iter->data << ' ';
 		if (iter->next)
-			cout << "->" << ' ';
+			os << "->" << ' ';
 		iter = iter->next;
 	}
+	
+	return os;
 }
