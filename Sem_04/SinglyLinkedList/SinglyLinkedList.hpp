@@ -1,4 +1,5 @@
 #include <iostream>
+#include <functional>
 using namespace std;
 
 template <typename T>
@@ -22,8 +23,8 @@ private:
 
 public:
 	SinglyLinkedList();
-	SinglyLinkedList(std::initializer_list<T>);
-	
+	SinglyLinkedList(std::initializer_list<T> iList);
+
 	SinglyLinkedList(const SinglyLinkedList<T>& other);
 	SinglyLinkedList(SinglyLinkedList<T>&& other) noexcept;
 
@@ -38,6 +39,10 @@ private:
 
 	void free();
 
+	Node* getMid(Node* head) const;
+	Node* mergeLists(Node* firstIter, Node* secondIter, std::function<bool(const T&, const T&)> cmp);
+	Node* mergeSort(Node* head, std::function<bool(const T&, const T&)> cmp);
+
 public:
 	void push_front(const T& el);
 	void push_back(const T& el);
@@ -49,11 +54,13 @@ public:
 
 	bool empty() const;
 
+	void sort(std::function<bool(const T&, const T&)> cmp);
+
 	template <typename U>
 	friend SinglyLinkedList<U> concat(SinglyLinkedList<U>& lhs, SinglyLinkedList<U>& rhs);
 
 	template <typename U>
-	friend std::ostream& operator<<(std::ostream&, const SinglyLinkedList<U>&);
+	friend std::ostream& operator<<(std::ostream& os, const SinglyLinkedList<U>& l);
 };
 
 template <typename T>
@@ -124,6 +131,85 @@ template <typename T>
 bool SinglyLinkedList<T>::empty() const
 {
 	return head == nullptr;
+}
+
+template <typename T>
+typename SinglyLinkedList<T>::Node* SinglyLinkedList<T>::getMid(Node* head) const
+{
+	Node* slow = head;
+	Node* fast = head->next;
+
+	while (fast && fast->next)
+	{
+		slow = slow->next;
+		fast = fast->next->next;
+	}
+	return slow;
+}
+template <typename T>
+typename SinglyLinkedList<T>::Node* SinglyLinkedList<T>::mergeLists(Node* firstIter, Node* secondIter, std::function<bool(const T&, const T&)> comp)
+{
+	if (!firstIter)
+		return secondIter;
+	if (!secondIter)
+		return firstIter;
+
+	Node* resultHead = nullptr;
+	Node* resultIter = nullptr;
+
+	if (comp(firstIter->data, secondIter->data))
+	{
+		resultHead = firstIter;
+		resultIter = firstIter;
+		firstIter = firstIter->next;
+	}
+	else
+	{
+		resultHead = secondIter;
+		resultIter = secondIter;
+		secondIter = secondIter->next;
+	}
+
+	while (firstIter && secondIter)
+	{
+		if (comp(firstIter->data, secondIter->data))
+		{
+			resultIter->next = firstIter;
+			firstIter = firstIter->next;
+		}
+		else
+		{
+			resultIter->next = secondIter;
+			secondIter = secondIter->next;
+		}
+		resultIter = resultIter->next;
+	}
+
+	resultIter->next = firstIter ? firstIter : secondIter;
+	return resultHead;
+}
+template <typename T>
+typename SinglyLinkedList<T>::Node* SinglyLinkedList<T>::mergeSort(Node* head, std::function<bool(const T&, const T&)> comp)
+{
+	if (!head || !head->next)
+		return head;
+
+	Node* mid = getMid(head);
+
+	Node* left = head;
+	Node* right = mid->next;
+	mid->next = nullptr;
+
+	left = mergeSort(left, comp);
+	right = mergeSort(right, comp);
+
+	return mergeLists(left, right, comp);
+}
+
+template <typename T>
+void SinglyLinkedList<T>::sort(std::function<bool(const T&, const T&)> comp)
+{
+	head = mergeSort(head, comp);
 }
 
 template <typename T>
@@ -249,6 +335,6 @@ std::ostream& operator<<(std::ostream& os, const SinglyLinkedList<T>& l)
 			os << "->" << ' ';
 		iter = iter->next;
 	}
-	
+
 	return os;
 }
