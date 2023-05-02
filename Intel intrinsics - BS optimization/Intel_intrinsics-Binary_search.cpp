@@ -31,12 +31,13 @@ static void AVXBinarySearch(const int* hayStack, std::size_t hayStackCount, cons
 			__m256i leftNotGtRightVector = _mm256_andnot_si256(leftGtRightVector, minusOnesVector);
 
 			// mid = left + (right - left) / 2
-			__m256i midPositionVector = _mm256_add_epi32(leftVector,
-				_mm256_srli_epi32(_mm256_sub_epi32(rightVector, leftVector), 1));
-			__m256i midElementVector = _mm256_i32gather_epi32(hayStack, midPositionVector, sizeof(int));
+			__m256i midPositionVector = _mm256_blendv_epi8(onesVector,
+				_mm256_add_epi32(leftVector, _mm256_srli_epi32(_mm256_sub_epi32(rightVector, leftVector), 1)), leftNotGtRightVector);
+			__m256i midElementVector = _mm256_blendv_epi8(onesVector,
+				_mm256_i32gather_epi32(hayStack, midPositionVector, sizeof(int)), leftNotGtRightVector);
 
-			__m256i equalVector = _mm256_cmpeq_epi32(needleVector, midElementVector);
-			__m256i greaterVector = _mm256_cmpgt_epi32(needleVector, midElementVector);
+			__m256i equalVector = _mm256_blendv_epi8(onesVector, _mm256_cmpeq_epi32(needleVector, midElementVector), leftNotGtRightVector);
+			__m256i greaterVector = _mm256_blendv_epi8(onesVector, _mm256_cmpgt_epi32(needleVector, midElementVector), leftNotGtRightVector);
 			__m256i smallerOrEqualVector = _mm256_andnot_si256(greaterVector, minusOnesVector);
 
 			indexVector = _mm256_blendv_epi8(indexVector, midPositionVector, equalVector);
