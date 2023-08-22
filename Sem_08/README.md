@@ -11,7 +11,7 @@
 ![alt_text](https://i.ibb.co/MZcSHQM/Binary-tree.png)
 
 ### Двоични дървета
-Ще ги редставяме със следната структура  
+Ще ги представяме със следната структура  
 ```c++
 template <typename T>
 struct Node
