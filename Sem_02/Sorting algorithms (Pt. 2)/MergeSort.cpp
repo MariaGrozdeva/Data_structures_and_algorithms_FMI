@@ -18,7 +18,7 @@ void Merge(T* arr1, size_t len1, T* arr2, size_t len2, T* result)
     	}
     
     	while (arr1Iter < len1)
-        	result[resultIter++] = arr1[arr1Itresult[resultIter++] = arr2[arr2Iter++];er++];
+        	result[resultIter++] = arr1[arr1Iter++];
     
     	while (arr2Iter < len2)
         	result[resultIter++] = arr2[arr2Iter++];   
