@@ -2,52 +2,64 @@
 using namespace std;
 
 // 6.0. Merge function - merges 2 sorted arrays
-template<typename T>
-void Merge(int* arr1, int len1, int* arr2, int len2)
+template <typename T>
+void Merge(T* arr1, size_t len1, T* arr2, size_t len2, T* result)
 {
-	T* resultArray = new T[len1 + len2];
-
-	int cursor1 = 0;
-	int cursor2 = 0;
-	int resultCursor = 0;
-
-	while (cursor1 < len1 && cursor2 < len2)
-	{
-		if (arr1[cursor1] <= arr2[cursor2])
-			resultArray[resultCursor++] = arr1[cursor1++];
-		else
-			resultArray[resultCursor++] = arr2[cursor2++];
-	}
-
-	while (cursor1 < len1)
-		resultArray[resultCursor++] = arr1[cursor1++];
-	while (cursor2 < len2)
-		resultArray[resultCursor++] = arr2[cursor2++];
-
-	for (int i = 0; i < len1 + len2; i++)
-		arr1[i] = resultArray[i];
-	delete[] resultArray;
+    unsigned arr1Iter = 0;
+    unsigned arr2Iter = 0;
+    unsigned resultIter = 0;
+    
+    while (arr1Iter < len1 && arr2Iter < len2)
+    {
+        if (arr1[arr1Iter] <= arr2[arr2Iter])
+            result[resultIter++] = arr1[arr1Iter++];
+        else
+            result[resultIter++] = arr2[arr2Iter++];    
+    }
+    
+    while (arr1Iter < len1)
+        result[resultIter++] = arr1[arr1Itresult[resultIter++] = arr2[arr2Iter++];er++];
+    
+    while (arr2Iter < len2)
+        result[resultIter++] = arr2[arr2Iter++];   
 }
 
 template <typename T>
-void MergeSort(T* arr, int len)
+void MergeSortStep(T* arr, size_t len, T* bufferArray)
 {
-	if (len == 1)
+    if (len <= 1)
+        return;
+    
+    unsigned midIndex = len / 2;
+    
+    MergeSortStep<T>(arr, midIndex, bufferArray);
+    MergeSortStep<T>(arr + midIndex, len - midIndex, bufferArray);
+    
+    Merge<T>(arr, midIndex, arr + midIndex, len - midIndex, bufferArray);
+    
+    for (size_t i = 0; i < len; i++)
+        arr[i] = bufferArray[i];
+}
+
+// 6.1. Merge sort (Complexity - 0(nlog(n)))
+template <typename T>
+void MergeSort(T* arr, size_t len)
+{
+    if (!arr || len == 0)
 		return;
-
-	int mid = len / 2;
-
-	MergeSort(arr, mid);
-	MergeSort(arr + mid, len - mid);
-
-	Merge<T>(arr, mid, arr + mid, len - mid);
+		
+    T* bufferArray = new T[len];
+    
+    MergeSortStep<T>(arr, len, bufferArray);
+    
+    delete[] bufferArray;
 }
 
 int main()
 {
-	int arr[4] = { 9, 6, 5, 8 };
-	MergeSort(arr, 4);
+    int arr[8] = { 170, 45, 75, 90, 802, 24, 2, 66 };
+	MergeSort(arr, 8);
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 8; i++)
 		cout << arr[i] << " ";
 }
