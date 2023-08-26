@@ -49,8 +49,8 @@ public:
 
 	void pop_front();
 
-	const T& front();
-	const T& back();
+	const T& front() const;
+	const T& back() const;
 
 	bool empty() const;
 
@@ -111,7 +111,7 @@ void SinglyLinkedList<T>::pop_front()
 }
 
 template <typename T>
-const T& SinglyLinkedList<T>::front()
+const T& SinglyLinkedList<T>::front() const
 {
 	if (!head)
 		throw length_error("Empty list!");
@@ -119,7 +119,7 @@ const T& SinglyLinkedList<T>::front()
 	return head->data;
 }
 template <typename T>
-const T& SinglyLinkedList<T>::back()
+const T& SinglyLinkedList<T>::back() const
 {
 	if (!tail)
 		throw length_error("Empty list!");
