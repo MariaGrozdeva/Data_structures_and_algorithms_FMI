@@ -37,6 +37,7 @@ public:
 	void push_back(const T& el);
 
 	void pop_front();
+	void pop_back();
 
 	const T& front();
 	const T& back();
@@ -97,6 +98,25 @@ void DoublyLinkedList<T>::pop_front()
 
 	Node* toDelete = head;
 	head = head->next;
+	delete toDelete;
+}
+template <typename T>
+void DoublyLinkedList<T>::pop_back()
+{
+	if (!head)
+		throw length_error("Empty list!");
+
+	if (head == tail)
+	{
+		delete head;
+		head = tail = nullptr;
+		return;
+	}
+
+	tail->prev->next = nullptr;
+
+	Node* toDelete = tail;
+	tail = tail->prev;
 	delete toDelete;
 }
 
