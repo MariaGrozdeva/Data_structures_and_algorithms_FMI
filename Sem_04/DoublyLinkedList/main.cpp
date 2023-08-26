@@ -32,6 +32,8 @@ int main()
 	l2.push_back(7);
 	l2.push_back(8);
 
+	l2.pop_back();
+
 	DoublyLinkedList<int> res = concat(l, l2);
 	res.print();
 }
