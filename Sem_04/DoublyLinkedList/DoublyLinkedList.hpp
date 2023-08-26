@@ -39,8 +39,8 @@ public:
 	void pop_front();
 	void pop_back();
 
-	const T& front();
-	const T& back();
+	const T& front() const;
+	const T& back() const;
 
 	bool empty() const;
 
@@ -121,7 +121,7 @@ void DoublyLinkedList<T>::pop_back()
 }
 
 template <typename T>
-const T& DoublyLinkedList<T>::front()
+const T& DoublyLinkedList<T>::front() const
 {
 	if (!head)
 		throw length_error("Empty list!");
@@ -129,7 +129,7 @@ const T& DoublyLinkedList<T>::front()
 	return head->data;
 }
 template <typename T>
-const T& DoublyLinkedList<T>::back()
+const T& DoublyLinkedList<T>::back() const
 {
 	if (!tail)
 		throw length_error("Empty list!");
