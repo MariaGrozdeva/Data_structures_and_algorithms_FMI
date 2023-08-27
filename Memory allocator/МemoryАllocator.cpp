@@ -1,12 +1,12 @@
-#include <iostream>
 #include <array>
-#include <vector>
 #include <assert.h>
-#include <thread>
 #include <barrier>
-#include <numeric>
 #include <cstdlib>
+#include <iostream>
+#include <numeric>
 #include <stdexcept>
+#include <thread>
+#include <vector>
 
 #if __linux__ != 0
 #include <time.h>
@@ -65,61 +65,67 @@ static uint64_t timer_nsec() {
 
 #endif
 
-////////////////////
-// Interfaces
-////////////////////
+struct MemoryBlock
+{
+	void* ptr = nullptr;
+	size_t len = 0;
 
-struct MemoryBlock {
-	MemoryBlock() {}
-	MemoryBlock(void* ptr, size_t len) : ptr(ptr), len(len) {}
+	MemoryBlock() = default;
+	MemoryBlock(void* ptr, size_t len) : ptr(ptr), len(len)
+	{}
 	inline operator bool() const
 	{
 		return len && ptr;
 	}
-	void* ptr = nullptr;
-	size_t len = 0;
 };
 
-class AllocatorBase {
-public:
-	inline MemoryBlock alloc(size_t size) {
-		return MemoryBlock();
-	}
-	inline void free(MemoryBlock& block) {}
-
-	size_t getMaxUsedMemory() const {
-		return maxUsedMemory;
-	}
+class AllocatorBase
+{
 protected:
 	size_t usedMemory = 0;
 	size_t maxUsedMemory = 0;
 
-	void* malloc(size_t size) {
+	void* malloc(size_t size)
+	{
 		usedMemory += size;
-		if (usedMemory > maxUsedMemory) {
+		if (usedMemory > maxUsedMemory)
+		{
 			maxUsedMemory = usedMemory;
 		}
 		return std::malloc(size);
 	}
-
-	void free(void* ptr, size_t size) {
+	void free(void* ptr, size_t size)
+	{
 		usedMemory -= size;
 		return std::free(ptr);
 	}
+
+public:
+	inline MemoryBlock alloc(size_t size)
+	{
+		return MemoryBlock();
+	}
+	inline void free(MemoryBlock& block)
+	{}
+	size_t getMaxUsedMemory() const
+	{
+		return maxUsedMemory;
+	}
 };
 
-
-class DefaultAllocator : public AllocatorBase {
+class DefaultAllocator : public AllocatorBase
+{
 public:
-	MemoryBlock alloc(size_t size) {
+	MemoryBlock alloc(size_t size)
+	{
 		return MemoryBlock(AllocatorBase::malloc(size), size);
 	}
 
-	void free(MemoryBlock& block) {
+	void free(MemoryBlock& block)
+	{
 		AllocatorBase::free(block.ptr, block.len);
 	}
 };
-
 
 static size_t align(size_t n)
 {
@@ -352,7 +358,7 @@ public:
 
 		Header* toFree = reinterpret_cast<Header*>(reinterpret_cast<char*>(block.ptr) - sizeof(Header));
 		toFree->setUsed(0);
-		
+
 		Header* prev = getPhysicalPrevBlock(toFree);
 		Header* next = getPhysicalNextBlock(toFree);
 
@@ -377,65 +383,79 @@ public:
 	}
 };
 
-
 ////////////////////
 // Tests
 ////////////////////
 
 template <typename Allocator>
-struct Test1 {
-	static void test(Allocator& allocator, size_t testSize = 1000) {
+struct Test1
+{
+	static void test(Allocator& allocator, size_t testSize = 1000)
+	{
 		std::vector<MemoryBlock> results;
 		results.reserve(testSize);
 
-		for (size_t i = 0; i < testSize; ++i) {
+		for (size_t i = 0; i < testSize; i++)
+		{
 			results.push_back(allocator.alloc(128 * (1 + i % 4)));
 		}
-
-		for (auto& block : results) {
+		for (auto& block : results)
+		{
 			allocator.free(block);
 		}
 	}
 };
 
 template <typename Allocator>
-struct Test2 {
-	static void test(Allocator& allocator, size_t testSize = 1000) {
+struct Test2
+{
+	static void test(Allocator& allocator, size_t testSize = 1000)
+	{
 		std::vector<MemoryBlock> results;
 		results.reserve(testSize * 1.1f);
 
-		for (size_t i = 0; i < testSize; ++i) {
+		for (size_t i = 0; i < testSize; i++)
+		{
 			results.push_back(allocator.alloc(i % 2 ? 32 : 64));
 
-			if (i % 10 == 0) {
+			if (i % 10 == 0)
+			{
 				results.push_back(allocator.alloc(4096 * 1024));
 			}
 		}
-		for (auto& block : results) {
+		for (auto& block : results)
+		{
 			allocator.free(block);
 		}
 	}
 };
 
 template <typename Allocator>
-struct Test3 {
-	static void test(Allocator& allocator, size_t testSize = 1000) {
+struct Test3
+{
+	static void test(Allocator& allocator, size_t testSize = 1000)
+	{
 		std::vector<MemoryBlock> results;
 		results.reserve(testSize);
 
-		for (size_t i = 0; i < testSize; ++i) {
+		for (size_t i = 0; i < testSize; i++)
+		{
 			results.push_back(allocator.alloc(i % 2 ? 32 : 2000));
 
-			// for every 10 blocks free first 5 of them
-			if (i % 10 == 4) {
-				for (int j = 0; j < 5; ++j) {
+			// for every 10 blocks free the first 5 of them
+			if (i % 10 == 4)
+			{
+				for (size_t j = 0; j < 5; j++)
+				{
 					allocator.free(results[i - j]);
 					results[i - j].ptr = nullptr;
 				}
 			}
 		}
-		for (auto& block : results) {
-			if (block) {
+		for (auto& block : results)
+		{
+			if (block)
+			{
 				allocator.free(block);
 			}
 		}
@@ -443,34 +463,39 @@ struct Test3 {
 };
 
 template <typename Allocator>
-struct Test4 {
-	static void test(Allocator& allocator, size_t testSize = 1000) {
+struct Test4
+{
+	static void test(Allocator& allocator, size_t testSize = 1000)
+	{
 		std::vector<MemoryBlock> results;
 		results.reserve(testSize * 1.1f);
 
-		for (size_t i = 0; i < testSize; ++i) {
+		for (size_t i = 0; i < testSize; ++i)
+		{
 			results.push_back(allocator.alloc(i % 2 ? 32 : 64));
 
-			if (i % 10 == 0) {
+			if (i % 10 == 0)
+			{
 				results.push_back(allocator.alloc(4096 * 1024));
 			}
 			// for every 10 blocks free first 5 of them
 			if (i % 10 == 4) {
-				for (int j = 0; j < 5; ++j) {
+				for (size_t j = 0; j < 5; j++)
+				{
 					allocator.free(results[i - j]);
 					results[i - j].ptr = nullptr;
 				}
 			}
 		}
-		for (auto& block : results) {
-			if (block) {
+		for (auto& block : results)
+		{
+			if (block)
+			{
 				allocator.free(block);
 			}
 		}
 	}
 };
-
-constexpr int threadsCount = 4;
 
 template <template <typename> typename Tester, typename Allocator>
 void executeSingleThreadTest(Allocator& allocator) {
@@ -491,45 +516,8 @@ void executeSingleThreadTest(Allocator& allocator) {
 	std::cout << "(" << double(defAllocator.getMaxUsedMemory()) / double(allocator.getMaxUsedMemory()) << ")" << std::endl;
 }
 
-
-template <template <typename> typename Tester, typename Allocator>
-uint64_t executeMultiThreadSingle(Allocator& allocator) {
-	std::array<uint64_t, threadsCount> results = { 0,0,0,0 };
-	std::barrier startingBarrier(threadsCount);
-	std::thread threads[threadsCount];
-
-	auto testDefault = [&startingBarrier, &allocator, &results](int index) {
-		auto time1 = timer_nsec();
-		Tester<Allocator>::test(allocator);
-		auto time2 = timer_nsec();
-		results[index] = time2 - time1;
-	};
-	for (int i = 0; i < threadsCount; i++) {
-		threads[i] = std::thread(testDefault, i);
-	}
-	for (int i = 0; i < threadsCount; i++) {
-		threads[i].join();
-	}
-
-	return std::accumulate(std::begin(results), std::end(results), 0u);
-}
-
-
-template <template <typename> typename Tester, typename Allocator>
-void executeMultiThreadTest(Allocator& allocator) {
-	assert(std::thread::hardware_concurrency() >= threadsCount);
-
-	DefaultAllocator defAllocator;
-
-	const auto defTime = executeMultiThreadSingle<Tester, DefaultAllocator>(defAllocator);
-	const auto yoursTime = executeMultiThreadSingle<Tester, Allocator>(allocator);
-
-	std::cout << "Time: " << defTime << "/" << yoursTime << "(" << double(defTime) / double(yoursTime) << ")";
-	std::cout << " max mem: " << defAllocator.getMaxUsedMemory() << "/" << allocator.getMaxUsedMemory();
-	std::cout << "(" << double(defAllocator.getMaxUsedMemory()) / double(allocator.getMaxUsedMemory()) << ")" << std::endl;
-}
-
-int main() {
+int main()
+{
 	{
 		MemoryAllocator custom;
 		executeSingleThreadTest<Test1, MemoryAllocator>(custom);
@@ -550,26 +538,5 @@ int main() {
 		executeSingleThreadTest<Test4, MemoryAllocator>(custom);
 	}
 
-
-
-	{
-		DefaultAllocator custom;
-		executeMultiThreadTest<Test1, DefaultAllocator>(custom);
-	}
-
-	{
-		DefaultAllocator custom;
-		executeMultiThreadTest<Test2, DefaultAllocator>(custom);
-	}
-
-	{
-		DefaultAllocator custom;
-		executeMultiThreadTest<Test3, DefaultAllocator>(custom);
-	}
-
-	{
-		DefaultAllocator custom;
-		executeMultiThreadTest<Test4, DefaultAllocator>(custom);
-	}
 	return 0;
 }
