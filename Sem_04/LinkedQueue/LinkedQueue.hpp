@@ -33,7 +33,7 @@ private:
 public:
 	void enqueue(const T& el);
 	void dequeue();
-	const T& peek();
+	const T& peek() const;
 	bool empty() const;
 };
 
@@ -69,7 +69,7 @@ void LinkedQueue<T>::dequeue()
 	delete toDelete;
 }
 template <typename T>
-const T& LinkedQueue<T>::peek()
+const T& LinkedQueue<T>::peek() const
 {
 	if (!head)
 		throw length_error("Empty queue!");
