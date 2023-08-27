@@ -33,7 +33,7 @@ private:
 public:
 	void push(const T& el);
 	void pop();
-	const T& top();
+	const T& top() const;
 	bool empty() const;
 };
 
@@ -69,7 +69,7 @@ void LinkedStack<T>::pop()
 	delete toDelete;
 }
 template <typename T>
-const T& LinkedStack<T>::top()
+const T& LinkedStack<T>::top() const
 {
 	if (!head)
 		throw length_error("Empty stack!");
