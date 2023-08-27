@@ -1,8 +1,6 @@
+#include <algorithm>
 #include <iostream>
 #include <vector>
-#include <algorithm>
-
-using namespace std;
 
 template <typename T>
 class BST
@@ -12,10 +10,10 @@ private:
 	{
 		T data;
 
-		Node* left;
-		Node* right;
+		Node* left = nullptr;
+		Node* right = nullptr;
 
-		Node(const T& data) : data(data), left(nullptr), right(nullptr)
+		Node(const T& data) : data(data)
 		{}
 	};
 
@@ -24,30 +22,40 @@ private:
 public:
 	BST();
 
-	BST(const vector<T>& v);
+	BST(const std::vector<T>& v);
+
 	BST(const BST<T>& other);
+
 	BST<T>& operator=(const BST<T>& other);
+
 	~BST();
 
 private:
-	void copyFromRec(Node*& root, Node* otherRoot);
-	void freeRec(Node* root);
+	void createBSTRec(Node*& root, const std::vector<T>& v, unsigned start, unsigned end);
 
 	void copyFrom(const BST<T>& other);
+
+	void copyFromRec(Node*& root, Node* otherRoot);
+
 	void free();
 
-	void createBSTRec(Node*& root, const vector<T>& v, int start, int end);
+	void freeRec(Node* root);
 
-	void findMax(Node* root, Node*& maxNode);
+	void printRec(Node* root, unsigned space) const;
 
-	bool containsRec(const T& el, Node* root, Node*& prev);
-	void removeRec(const T& el, Node*& root);
+	bool containsRec(const T& el, Node* root, Node*& prev) const;
 
-	void printRec(Node* root, int space) const;
+	void findToRemove(const T& el, Node*& root);
+
+	void removeRec(Node*& root);
+
+	void findMax(Node* root, Node*& maxNode) const;
 
 public:
 	bool contains(const T& el) const;
+
 	void insert(const T& el);
+
 	void remove(const T& el);
 
 	void print() const;
@@ -56,8 +64,32 @@ public:
 template <typename T>
 bool BST<T>::contains(const T& el) const
 {
-	containsRec(el, root);
+	return containsRec(el, root);
 }
+
+template <typename T>
+bool BST<T>::containsRec(const T& el, Node* root, Node*& prev) const
+{
+	if (!root)
+	{
+		return false;
+	}
+	if (root->data == el)
+	{
+		return true;
+	}
+
+	prev = root;
+	if (el < root->data)
+	{
+		return containsRec(el, root->left, prev);
+	}
+	else
+	{
+		return containsRec(el, root->right, prev);
+	}
+}
+
 template <typename T>
 void BST<T>::insert(const T& el)
 {
@@ -69,19 +101,116 @@ void BST<T>::insert(const T& el)
 
 	Node* prev = nullptr;
 	if (containsRec(el, root, prev))
+	{
 		return;
+	}
 
 	Node* newNode = new Node(el);
-
 	if (el < prev->data)
+	{
 		prev->left = newNode;
+	}
 	else
+	{
 		prev->right = newNode;
+	}
 }
+
 template <typename T>
 void BST<T>::remove(const T& el)
 {
-	removeRec(el, root);
+	findToRemove(el, root);
+}
+
+template <typename T>
+void BST<T>::findToRemove(const T& el, Node*& root)
+{
+	if (!root)
+	{
+		return;
+	}
+
+	if (root->data == el)
+	{
+		removeRec(root);
+	}
+	else if (el < root->data)
+	{
+		findToRemove(el, root->left);
+	}
+	else
+	{
+		findToRemove(el, root->right);
+	}
+}
+
+template <typename T>
+void BST<T>::removeRec(Node*& root)
+{
+	if (!root)
+	{
+		return;
+	}
+
+	// remove leaf
+	if (!root->left && !root->right)
+	{
+		delete root;
+		root = nullptr;
+	}
+	// remove node only one child
+	else if ((root->left && !root->right) || (!root->left && root->right))
+	{
+		Node* toDelete = root->left ? root->left : root->right;
+		swapPointers(root, toDelete);
+		delete toDelete;
+		toDelete = nullptr;
+	}
+	else
+	{
+		// remove node with left and right child
+		Node* maxNode = nullptr;
+		findMax(root->left, maxNode);
+
+		Node* oldRootLeft = root->left;
+		Node* oldRootRight = root->right;
+		Node* oldMaxNodeLeft = maxNode->left;
+
+		if (maxNode == root->left) // the case in which root and maxNode are adjacent
+		{
+			Node* maxNodeNotRef = maxNode;
+			swapPointers(root, maxNodeNotRef);
+
+			root->left = maxNodeNotRef;
+			root->right = oldRootRight;
+			maxNodeNotRef->left = oldMaxNodeLeft;
+			maxNodeNotRef->right = nullptr;
+
+			removeRec(root->left);
+		}
+		else
+		{
+			swapPointers(root, maxNode);
+
+			root->left = oldRootLeft;
+			root->right = oldRootRight;
+			maxNode->left = oldMaxNodeLeft;
+			maxNode->right = nullptr;
+
+			removeRec(maxNode);
+		}
+	}
+}
+
+template <typename T>
+void BST<T>::findMax(Node* root, Node*& maxNode) const
+{
+	Node* iter = root;
+	while (iter)
+	{
+		maxNode = iter;
+		iter = iter->right;
+	}
 }
 
 template <typename T>
@@ -91,18 +220,37 @@ BST<T>::BST()
 }
 
 template <typename T>
-BST<T>::BST(const vector<T>& v)
+BST<T>::BST(const std::vector<T>& v)
 {
 	if (!is_sorted(v.begin(), v.end()))
+	{
 		throw "Array should be sorted!";
-
+	}
 	createBSTRec(root, v, 0, v.size() - 1);
 }
+
+template <typename T>
+void BST<T>::createBSTRec(Node*& root, const std::vector<T>& v, unsigned start, unsigned end)
+{
+	if (start > end)
+	{
+		root = nullptr;
+		return;
+	}
+
+	unsigned mid = start + (end - start) / 2;
+	root = new Node(v[mid]);
+
+	createBSTRec(root->left, v, start, mid - 1);
+	createBSTRec(root->right, v, mid + 1, end);
+}
+
 template <typename T>
 BST<T>::BST(const BST<T>& other)
 {
 	copyFrom(other);
 }
+
 template <typename T>
 BST<T>& BST<T>::operator=(const BST<T>& other)
 {
@@ -114,6 +262,7 @@ BST<T>& BST<T>::operator=(const BST<T>& other)
 
 	return *this;
 }
+
 template <typename T>
 BST<T>::~BST()
 {
@@ -121,104 +270,24 @@ BST<T>::~BST()
 }
 
 template <typename T>
-bool BST<T>::containsRec(const T& el, Node* root, Node*& prev)
-{
-	if (!root)
-		return false;
-	if (root->data == el)
-		return true;
-	
-	prev = root;
-	if (el < root->data)
-		return containsRec(el, root->left, prev);
-	else
-		return containsRec(el, root->right, prev);
-}
-template <typename T>
-void BST<T>::removeRec(const T& el, Node*& root)
-{
-	if (!root)
-		return;
-
-	Node* prev = nullptr;
-	if (!containsRec(el, root, prev))
-		return;
-
-	Node*& toDelete = prev == nullptr ? root :
-		el < prev->data ? prev->left : prev->right;
-
-	// remove leaf
-	if (!toDelete->left && !toDelete->right)
-	{
-		delete toDelete;
-		toDelete = nullptr;
-	}
-
-	// remove node only with left child
-	else if (toDelete->left && !toDelete->right)
-	{
-		if (prev->left == toDelete)
-			prev->left = toDelete->left;
-		else
-			prev->right = toDelete->left;
-
-		delete toDelete;
-		toDelete = nullptr;
-	}
-	// remove node only with right child
-	else if (!toDelete->left && toDelete->right)
-	{
-		if (prev->left == toDelete)
-			prev->left = toDelete->right;
-		else
-			prev->right = toDelete->right;
-
-		delete toDelete;
-		toDelete = nullptr;
-	}
-
-	// remove node with left and right child
-	else
-	{
-		Node* maxNode;
-		findMax(toDelete->left, maxNode);
-		swap(toDelete->data, maxNode->data); // !!!
-		removeRec(maxNode->data, toDelete->left);
-	}
-}
-
-template <typename T>
-void BST<T>::findMax(Node* root, Node*& maxNode)
-{
-	Node* iter = root;
-	while (iter)
-	{
-		maxNode = iter;
-		iter = iter->right;
-	}
-}
-
-template <typename T>
-void BST<T>::createBSTRec(Node*& root, const vector<T>& v, int start, int end)
-{
-	if (start > end)
-	{
-		root = nullptr;
-		return;
-	}
-
-	int mid = start + (end - start) / 2;
-	root = new Node(v[mid]);
-
-	createBSTRec(root->left, v, start, mid - 1);
-	createBSTRec(root->right, v, mid + 1, end);
-}
-
-template <typename T>
 void BST<T>::copyFrom(const BST<T>& other)
 {
 	copyFromRec(root, other.root);
 }
+
+template <typename T>
+void BST<T>::copyFromRec(Node*& root, Node* otherRoot)
+{
+	if (!otherRoot)
+	{
+		return;
+	}
+
+	root = new Node(otherRoot->data);
+	copyFromRec(root->left, otherRoot->left);
+	copyFromRec(root->right, otherRoot->right);
+}
+
 template <typename T>
 void BST<T>::free()
 {
@@ -226,48 +295,50 @@ void BST<T>::free()
 }
 
 template <typename T>
-void BST<T>::copyFromRec(Node*& root, Node* otherRoot)
-{
-	if (!otherRoot)
-		return;
-
-	root = new Node(otherRoot->data);
-
-	copyFromRec(root->left, otherRoot->left);
-	copyFromRec(root->right, otherRoot->right);
-}
-template <typename T>
 void BST<T>::freeRec(Node* root)
 {
 	if (!root)
+	{
 		return;
+	}
 
 	freeRec(root->left);
 	freeRec(root->right);
-
 	delete root;
 }
 
 template <typename T>
-void BST<T>::printRec(Node* root, int space) const
-{
-	if (!root)
-		return;
-
-	int count = 10;
-
-	space += count;
-	printRec(root->right, space);
-
-	cout << endl;
-	for (int i = count; i < space; i++)
-		cout << ' ';
-	cout << root->data << endl;
-
-	printRec(root->left, space);
-}
-template <typename T>
 void BST<T>::print() const
 {
 	printRec(root, 0);
+}
+
+template <typename T>
+void BST<T>::printRec(Node* root, unsigned space) const
+{
+	if (!root)
+	{
+		return;
+	}
+
+	unsigned count = 10;
+	space += count;
+	printRec(root->right, space);
+
+	std::cout << std::endl;
+	for (size_t i = count; i < space; i++)
+	{
+		std::cout << ' ';
+	}
+	std::cout << root->data << std::endl;
+
+	printRec(root->left, space);
+}
+
+template <typename P>
+void swapPointers(P*& left, P*& right)
+{
+	P* tempPtr = left;
+	left = right;
+	right = tempPtr;
 }

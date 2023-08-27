@@ -10,22 +10,22 @@ int main()
 	bst.insert(3);
 	bst.insert(5);
 
-	cout << "Initial BST:" << endl;
+	std::cout << "Initial BST:" << std::endl;
 	bst.print();
-	cout << "------------------------------" << endl;
+	std::cout << "------------------------------" << std::endl;
 
 	bst.remove(2);
-	cout << "After removing 2:" << endl;
+	std::cout << "After removing 2:" << std::endl;
 	bst.print();
-	cout << "------------------------------" << endl;
+	std::cout << "------------------------------" << std::endl;
 
 	bst.remove(4);
-	cout << "After removing 4:" << endl;
+	std::cout << "After removing 4:" << std::endl;
 	bst.print();
-	cout << "------------------------------" << endl;
+	std::cout << "------------------------------" << std::endl;
 
 	BST<int> bst2 = bst;
-	cout << "After copy:" << endl;
+	std::cout << "After copy:" << std::endl;
 	bst.print();
-	cout << "------------------------------" << endl;
+	std::cout << "------------------------------" << std::endl;
 }
