@@ -216,7 +216,11 @@ template <typename T>
 SinglyLinkedList<T> concat(SinglyLinkedList<T>& lhs, SinglyLinkedList<T>& rhs) // suppose lhs and rhs are different
 {
 	SinglyLinkedList<T> result;
-
+	
+	if (!lhs.head && !rhs.head)
+	{
+		return result;
+	}
 	if (!lhs.head)
 	{
 		result.head = rhs.head;
