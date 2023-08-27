@@ -11,7 +11,8 @@
 #if __linux__ != 0
 #include <time.h>
 
-static uint64_t timer_nsec() {
+static uint64_t timer_nsec()
+{
 #if defined(CLOCK_MONOTONIC_RAW)
 	const clockid_t clockid = CLOCK_MONOTONIC_RAW;
 
@@ -30,16 +31,19 @@ static uint64_t timer_nsec() {
 #define NOMINMAX
 #include <Windows.h>
 
-static struct TimerBase {
+static struct TimerBase
+{
 	LARGE_INTEGER freq;
-	TimerBase() {
+	TimerBase()
+	{
 		QueryPerformanceFrequency(&freq);
 	}
 } timerBase;
 
 // the order of global initialisaitons is non-deterministic, do
 // not use this routine in the ctors of globally-scoped objects
-static uint64_t timer_nsec() {
+static uint64_t timer_nsec()
+{
 	LARGE_INTEGER t;
 	QueryPerformanceCounter(&t);
 
@@ -49,16 +53,19 @@ static uint64_t timer_nsec() {
 #elif __APPLE__ != 0
 #include <mach/mach_time.h>
 
-static struct TimerBase {
+static struct TimerBase
+{
 	mach_timebase_info_data_t tb;
-	TimerBase() {
+	TimerBase()
+	{
 		mach_timebase_info(&tb);
 	}
 } timerBase;
 
 // the order of global initialisaitons is non-deterministic, do
 // not use this routine in the ctors of globally-scoped objects
-static uint64_t timer_nsec() {
+static uint64_t timer_nsec()
+{
 	const uint64_t t = mach_absolute_time();
 	return t * timerBase.tb.numer / timerBase.tb.denom;
 }
@@ -478,8 +485,9 @@ struct Test4
 			{
 				results.push_back(allocator.alloc(4096 * 1024));
 			}
-			// for every 10 blocks free first 5 of them
-			if (i % 10 == 4) {
+			// for every 10 blocks free the first 5 of them
+			if (i % 10 == 4)
+			{
 				for (size_t j = 0; j < 5; j++)
 				{
 					allocator.free(results[i - j]);
@@ -498,7 +506,8 @@ struct Test4
 };
 
 template <template <typename> typename Tester, typename Allocator>
-void executeSingleThreadTest(Allocator& allocator) {
+void executeTest(Allocator& allocator)
+{
 	DefaultAllocator defAllocator;
 
 	auto time1 = timer_nsec();
@@ -520,22 +529,22 @@ int main()
 {
 	{
 		MemoryAllocator custom;
-		executeSingleThreadTest<Test1, MemoryAllocator>(custom);
+		executeTest<Test1, MemoryAllocator>(custom);
 	}
 
 	{
 		MemoryAllocator custom;
-		executeSingleThreadTest<Test2, MemoryAllocator>(custom);
+		executeTest<Test2, MemoryAllocator>(custom);
 	}
 
 	{
 		MemoryAllocator custom;
-		executeSingleThreadTest<Test3, MemoryAllocator>(custom);
+		executeTest<Test3, MemoryAllocator>(custom);
 	}
 
 	{
 		MemoryAllocator custom;
-		executeSingleThreadTest<Test4, MemoryAllocator>(custom);
+		executeTest<Test4, MemoryAllocator>(custom);
 	}
 
 	return 0;
