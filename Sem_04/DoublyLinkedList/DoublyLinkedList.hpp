@@ -147,7 +147,11 @@ template <typename T>
 DoublyLinkedList<T> concat(DoublyLinkedList<T>& lhs, DoublyLinkedList<T>& rhs)
 {
 	DoublyLinkedList<T> result;
-
+	
+	if (!lhs.head && !rhs.head)
+	{
+		return result;
+	}
 	if (!lhs.head)
 	{
 		result.head = rhs.head;
