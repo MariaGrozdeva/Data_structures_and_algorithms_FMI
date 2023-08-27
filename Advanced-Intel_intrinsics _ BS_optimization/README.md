@@ -8,4 +8,4 @@ One example of intrinsics (the one I've used for my solution) is the [**Advanced
 
 To evaluate the performance of AVX, a series of tests were conducted to compare the speed of an ordinary Binary Search with that of an AVX Binary Search. The tests used various datasets and were repeated multiple times to ensure accuracy. The results showed a significant improvement in performance for the AVX Binary Search across all tests, indicating the efficacy of using intrinsics for optimization purposes.
 
-![alt_text](https://github.com/MariaGrozdeva/Data_structures_and_algorithms_FMI/blob/main/Intel%20intrinsics%20-%20BS%20optimization/Tests.png)
+![alt_text](https://github.com/MariaGrozdeva/Data_structures_and_algorithms_FMI/blob/main/Advanced-Intel_intrinsics%20_%20BS_optimization/Tests.png)
