@@ -47,7 +47,7 @@ public:
 	template <typename U>
 	friend DoublyLinkedList<U> concat(DoublyLinkedList<U>& lhs, DoublyLinkedList<U>& rhs);
 
-	void print() const; // O(n) complexity!
+	void print() const;
 };
 
 template <typename T>
