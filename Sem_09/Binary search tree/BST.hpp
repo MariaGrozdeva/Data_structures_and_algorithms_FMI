@@ -49,7 +49,7 @@ private:
 
 	void removeRec(Node*& root);
 
-	void findMax(Node* root, Node*& maxNode) const;
+	Node*& findMax(Node*& root) const;
 
 public:
 	bool contains(const T& el) const;
@@ -159,7 +159,7 @@ void BST<T>::removeRec(Node*& root)
 		delete root;
 		root = nullptr;
 	}
-	// remove node only one child
+	// remove node with only one child
 	else if (!root->left || !root->right)
 	{
 		Node* toDelete = root->left ? root->left : root->right;
@@ -167,11 +167,10 @@ void BST<T>::removeRec(Node*& root)
 		delete toDelete;
 		toDelete = nullptr;
 	}
+	// remove node with both left and right child
 	else
 	{
-		// remove node with left and right child
-		Node* maxNode = nullptr;
-		findMax(root->left, maxNode);
+		Node*& maxNode = findMax(root->left);
 
 		Node* oldRootLeft = root->left;
 		Node* oldRootRight = root->right;
@@ -204,14 +203,15 @@ void BST<T>::removeRec(Node*& root)
 }
 
 template <typename T>
-void BST<T>::findMax(Node* root, Node*& maxNode) const
+typename BST<T>::Node*& BST<T>::findMax(Node*& root) const
 {
-	Node* iter = root;
-	while (iter)
+	if (!root->right)
 	{
-		maxNode = iter;
-		iter = iter->right;
+		return root;
 	}
+
+	Node*& maxNode = findMax(root->right);
+	return maxNode;
 }
 
 template <typename T>
