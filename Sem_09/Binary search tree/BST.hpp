@@ -64,7 +64,8 @@ public:
 template <typename T>
 bool BST<T>::contains(const T& el) const
 {
-	return containsRec(el, root);
+	Node* prev = nullptr;
+	return containsRec(el, root, prev);
 }
 
 template <typename T>
