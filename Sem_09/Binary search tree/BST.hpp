@@ -209,9 +209,7 @@ typename BST<T>::Node*& BST<T>::findMax(Node*& root) const
 	{
 		return root;
 	}
-
-	Node*& maxNode = findMax(root->right);
-	return maxNode;
+	return findMax(root->right);
 }
 
 template <typename T>
