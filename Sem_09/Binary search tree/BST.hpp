@@ -159,7 +159,7 @@ void BST<T>::removeRec(Node*& root)
 		root = nullptr;
 	}
 	// remove node only one child
-	else if ((root->left && !root->right) || (!root->left && root->right))
+	else if (!root->left || !root->right)
 	{
 		Node* toDelete = root->left ? root->left : root->right;
 		swapPointers(root, toDelete);
