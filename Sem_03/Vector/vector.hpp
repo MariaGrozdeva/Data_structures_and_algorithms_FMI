@@ -74,12 +74,12 @@ class vector
 
 	reverse_iterator rbegin()
 	{
-		return {_data + _size - 1};
+		return reverse_iterator(_data + _size - 1);
 	}
 
 	reverse_iterator rend()
 	{
-		return {_data - 1};
+		return reverse_iterator(_data - 1);
 	}
 
 	const T& back() const
@@ -140,8 +140,7 @@ template <class T>
 vector<T>::vector(const vector<T>& other) : _data(nullptr), _capacity(other._capacity)
 {
 	_capacity = _capacity ? _capacity : 1;
-    	_data = static_cast<T*>(operator new(other._capacity * sizeof(T)));
-
+    	_data = static_cast<T*>(operator new(_capacity * sizeof(T)));
     	try
 	{
         	for (_size = 0; _size < other._size; _size++)
@@ -162,16 +161,22 @@ vector<T>& vector<T>::operator=(const vector<T>& other)
 {
 	if (this != &other)
 	{
-		// no reallocation is done
         	if (_capacity < other._size)
 		{
             		free();
-            		reserve(other._capacity);
+            		_data = static_cast<T*>(operator new(other._capacity * sizeof(T)));
+		}
+		else
+		{
+		        for (size_t i = other._size; i < _size; i++)
+		        {
+		            _data[i].~T();
+		        }
 		}
         	for (_size = 0; _size < other._size; ++_size)
 		{
-            		// If exception is thrown we do not handle it, but no memory leak can happen
-            		data[size] = other[size];
+            		// If exception is thrown we do not handle it, but no memory leak can happen (basic exception guarantee)
+            		_data[_size] = other[_size];
         	}
     	}
 	return *this;
@@ -208,7 +213,6 @@ void vector<T>::free()
 	{
 		_data[i].~T();
 	}
-
 	// deallocate memory
 	operator delete(_data, _capacity * sizeof(T));
 }
@@ -234,8 +238,8 @@ size_t vector<T>::calculate_capacity() const
 	return _capacity * Constants::GROWTH_FACTOR;
 }
 
-// Resizes the container to contain `n` elements, does nothing if `n` == _size. 
-// If the current size is greater than `n`, the container is reduced to its first count elements. 
+// Resizes the container to contain `n` elements, does nothing if `n` == _size.
+// If the current size is greater than `n`, the container is reduced to its first `n` elements.
 // If the current size is less than `n`, then additional default-inserted elements are appended.
 template <class T>
 void vector<T>::resize(size_t n)
@@ -262,29 +266,26 @@ void vector<T>::resize(size_t n)
 		}
 		else
 		{
-			T* new_data = static_cast<T*>(operator new(n * sizeof(T)));
+			T* newData = static_cast<T*>(operator new(n * sizeof(T)));
 			for (size_t i = 0; i < _size; i++)
 			{
-				new (&new_data[i]) T(std::move(_data[i]));
+				new (&newData[i]) T(std::move(_data[i]));
 			}
 			for (size_t i = _size; i < n; i++)
 			{
-				new (&new_data[i]) T();
+				new (&newData[i]) T();
 			}
-			
 			operator delete(_data, _capacity * sizeof(T));
 
-			_data = new_data;
+			_data = newData;
 			_capacity = n;
 			_size = n;
 		}
 	}
 }
 
-// Increase the capacity of the vector (the total number 
-// of elements that the vector can hold without requiring reallocation) 
-// to a value that's greater or equal to `n`. If `n` is greater than
-// the current _capacity, new storage is allocated, otherwise the function does nothing. 
+// Increase the _capacity of the vector to a value that's greater than or equal to `n`.
+// If `n` is greater than the current capacity, new storage is allocated, otherwise the function does nothing.
 template <class T>
 void vector<T>::reserve(size_t n)
 {
@@ -297,7 +298,6 @@ void vector<T>::reserve(size_t n)
 	for (size_t i = 0; i < _size; i++)
         {
 		new (&newData[i]) T(std::move(_data[i]));
-                _data[i].~T();
 	}
 	operator delete(_data, _capacity * sizeof(T));
 
@@ -305,8 +305,8 @@ void vector<T>::reserve(size_t n)
 	_capacity = n;
 }
 
-// Requests the container to reduce its capacity to fit its size.
-// This may cause a reallocation, but has no effect on the vector size and cannot alter its elements.
+// Requests the container to reduce its _capacity to fit its _size.
+// This may cause a reallocation, but has no effect on the vector _size and cannot alter its elements.
 template <class T>
 void vector<T>::shrink_to_fit()
 {
@@ -346,7 +346,6 @@ void vector<T>::push_back(T&& element)
 	new (&_data[_size++]) T(std::move(element));
 }
 
-// Removes the last element of the container.
 template <class T>
 void vector<T>::pop_back()
 {
@@ -357,14 +356,12 @@ void vector<T>::pop_back()
 	erase(--end());
 }
 
-// Erases the specified elements from the container.
 template <class T>
 void vector<T>::erase(const_iterator position)
 {
 	erase(position, position + 1);
 }
 
-// Erases the specified range from the container.
 template <class T>
 void vector<T>::erase(const_iterator first, const_iterator last)
 {
@@ -394,7 +391,7 @@ void vector<T>::erase(const_iterator first, const_iterator last)
 	_size -= deleted_count;
 }
 
-// Appends a new element to the end of the container. 
+// Appends a new element to the end of the container.
 // The element is constructed through placement-new in-place.
 template <class T>
 template <class... Args>
