@@ -8,7 +8,7 @@ template<typename T, typename Allocator = std::allocator<T>>
 class queue 
 {
 public:
-    queue() : data(myAlloc.allocate(capacity)), size(0), capacity(8), putIter(0), getIter(0) {}
+    queue();
 
     queue(const queue<T, Allocator>& other);
     queue<T, Allocator>& operator=(const queue<T, Allocator>& other);
@@ -154,6 +154,12 @@ template<typename T, typename Allocator>
 bool queue<T, Allocator>::empty() const
 {
     return size == 0;
+}
+
+template<typename T, typename Allocator>
+queue<T, Allocator>::queue() : size(0), capacity(8), putIter(0), getIter(0)
+{
+    data = myAlloc.allocate(capacity);
 }
 
 template<typename T, typename Allocator>
