@@ -348,7 +348,7 @@ void forward_list<T>::reverse()
 }
 
 template <class T>
-template<class Func>
+template <class Func>
 void forward_list<T>::map(const Func& func)
 {
 	for (forward_list<T>::SllIterator it = begin(); it != end(); it++)
