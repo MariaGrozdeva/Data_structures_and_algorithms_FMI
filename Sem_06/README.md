@@ -8,7 +8,7 @@
 Множеството от елементите на линейните структури от данни, заедно с релацията "предшествие" образуват ***линейно наредено множество*** (нямаме несравними елементи по критерия "предшествие").  
 
 ## Дървета 
-![alt_text](https://i.ibb.co/MZcSHQM/Binary-tree.png)
+![alt text](https://github.com/MariaGrozdeva/Data_structures_and_algorithms_FMI/blob/main/Sem_06/images/tree.png)
 
 ### Двоични дървета
 Ще ги представяме със следната структура  
@@ -61,4 +61,4 @@ struct Node
 **Задача 12:** Напишете функция, която приема указател към корена на двоично дърво и *променя дървото в неговата огледална форма*.  
 
 **Задача 13:**  
-![alt_text](https://i.ibb.co/dtgdSFv/Tripple-tree.png)
+![alt text](https://github.com/MariaGrozdeva/Data_structures_and_algorithms_FMI/blob/main/Sem_06/images/tripleTree.png)
