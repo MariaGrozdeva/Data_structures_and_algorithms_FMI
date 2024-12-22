@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cassert>
+#include <cstdint> // for uintptr_t
 
 template <typename T>
 class AVL
@@ -70,8 +71,10 @@ private:
 
 	bool containsRec(const Node*, const T&) const;
 
-	T& dos(size_t, Node*);
-	const T& dos(size_t, const Node*) const;
+	T& dos(Node*, size_t);
+	const T& dos(const Node*, size_t) const;
+	
+	int rankRec(const Node*, const T&) const;
 
 public:
 	Node* root = nullptr;
@@ -87,6 +90,8 @@ public:
 
 	T& operator[](size_t);
 	const T& operator[](size_t) const;
+	
+	int rank(const T&) const;
 };
 
 template <typename T>
@@ -241,16 +246,10 @@ bool AVL<T>::deletionAndUpdate(Node*& root, bool& existBfZero)
 
 		if (maxNode == root->left) // the case in which root and maxNode are adjacent
 		{
-			Node* maxNodeNotRef = maxNode;
-			swapPointers(root, maxNodeNotRef);
-			std::swap(root->size, maxNodeNotRef->size);
-
-			root->left = maxNodeNotRef;
-			root->right = oldRootRight;
-			maxNodeNotRef->left = oldMaxNodeLeft;
-			maxNodeNotRef->right = nullptr;
-
-			deletionAndUpdate(root->left, existBfZero);
+			maxNode->right = root->right;
+           		Node* toDelete = root;
+            		root = maxNode;
+            		delete toDelete;
 		}
 		else
 		{
@@ -349,43 +348,65 @@ size_t AVL<T>::size() const
 
 // Allowing index for logarithmic time.
 template <typename T>
-T& AVL<T>::dos(size_t index, Node* root)
+T& AVL<T>::dos(Node* root, size_t index)
 {
-	size_t rightSize = root->right ? root->right->size : 0;
-	size_t leftSize = root->size - rightSize - 1;
-
+	size_t leftSize = getCleanedPointer(root->left) ? getCleanedPointer(root->left)->size : 0;
 	if (leftSize == index)
 		return root->data;
 	else if (leftSize > index)
-		return dos(index, getCleanedPointer(root->left));
+		return dos(getCleanedPointer(root->left), index);
 	else
-		return dos(index - leftSize - 1, root->right);
+		return dos(root->right, index - leftSize - 1);
 }
 template <typename T>
 T& AVL<T>::operator[](size_t index)
 {
 	assert(root && index < root->size);
-	return dos(index, root);
+	return dos(root, index);
 }
 
 template <typename T>
-const T& AVL<T>::dos(size_t index, const Node* root) const
+const T& AVL<T>::dos(const Node* root, size_t index) const
 {
-	size_t rightSize = root->right ? root->right->size : 0;
-	size_t leftSize = root->size - rightSize - 1;
-
+	size_t leftSize = getCleanedPointer(root->left) ? getCleanedPointer(root->left)->size : 0;
 	if (leftSize == index)
 		return root->data;
 	else if (leftSize > index)
-		return dos(index, getCleanedPointer(root->left));
+		return dos(getCleanedPointer(root->left), index);
 	else
-		return dos(index - leftSize - 1, root->right);
+		return dos(root->right, index - leftSize - 1);
 }
 template <typename T>
 const T& AVL<T>::operator[](size_t index) const
 {
 	assert(root && index < root->size);
-	return dos(index, root);
+	return dos(root, index);
+}
+
+template <typename T>
+int AVL<T>::rankRec(const Node* root, const T& el) const
+{
+        if (!root)
+                return -1;
+        
+        int leftSize = getCleanedPointer(root->left) ? getCleanedPointer(root->left)->size : 0;
+    
+        if (root->data == el)
+                return leftSize;
+        if (root->data > el)
+                return rankRec(getCleanedPointer(root->left), el);
+        else
+        {
+                int rightRank = rankRec(root->right, el);
+                if (rightRank == -1) 
+                        return -1; // If element is not found in the right subtree, propagate -1
+                return leftSize + 1 + rightRank;
+        }
+}
+template <typename T>
+int AVL<T>::rank(const T& el) const
+{
+        return rankRec(root, el);
 }
 
 template <typename T>

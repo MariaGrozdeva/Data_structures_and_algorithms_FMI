@@ -166,6 +166,18 @@ bool testCopy()
 	return true;
 }
 
+bool testRank()
+{
+        AVL<int> avl = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+        for (size_t i = 0; i < avl.size(); i++)
+                if (avl.rank(i) != i)
+                        return false;
+        if (avl.rank(15) != -1)
+                return false;
+
+        return true;
+}
 
 void runTests()
 {
@@ -177,4 +189,5 @@ void runTests()
 	std::cout << "Test 6: " << testEraseNodesWithTwoChildren() << std::endl;
 	std::cout << "Test 7: " << testEraseRandom() << std::endl;
 	std::cout << "Test 8: " << testCopy() << std::endl;
+	std::cout << "Test 9: " << testRank() << std::endl;
 }
