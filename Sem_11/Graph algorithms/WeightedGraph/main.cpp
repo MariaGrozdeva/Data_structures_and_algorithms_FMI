@@ -51,4 +51,29 @@ int main()
             std::cout << "Distance to vertex " << i << ": " << distances[i] << std::endl;
         }
     }
+    
+    std::cout << "--------------------------------------------------------------------------------" << std::endl;
+    
+    { // Prim's MST
+        WeightedGraph g(6, false);
+        g.addEdge(0, 1, 4);
+        g.addEdge(0, 2, 4);
+        g.addEdge(1, 2, 2);
+        g.addEdge(1, 3, 5);
+        g.addEdge(2, 3, 8);
+        g.addEdge(2, 4, 10);
+        g.addEdge(3, 4, 2);
+        g.addEdge(3, 5, 6);
+        g.addEdge(4, 5, 3);
+        
+        std::vector<Edge> mst;
+        int mstWeight = g.prim(mst);
+        
+        std::cout << "Minimum Spanning Tree (Prim's Algorithm):\n";
+        std::cout << "Total MST weight: " << mstWeight << std::endl;
+        for (const auto& [u, v, w] : mst)
+        {
+            std::cout << "Edge: " << u << " - " << v << " (Weight: " << w << ")\n";
+        }
+    }
 }

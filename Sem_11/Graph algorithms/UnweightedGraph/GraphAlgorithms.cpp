@@ -1,7 +1,8 @@
 #include "GraphAlgorithms.h"
 
-#include <iostream>
 #include <climits>
+#include <iostream>
+#include <queue>
 #include <stdexcept>
 
 Graph::Graph(size_t verticesCount, bool oriented) : adjList(verticesCount), oriented(oriented)
@@ -175,85 +176,4 @@ bool Graph::containsCycleRec(unsigned currVertex, std::vector<bool>& visited, st
     }
     s[currVertex] = false;
     return false;
-}
-
-// --------------------------------------------------------------------------------
-
-WeightedGraph::WeightedGraph(size_t verticesCount, bool oriented) : adjList(verticesCount), oriented(oriented)
-{}
-
-void WeightedGraph::addEdge(unsigned start, unsigned end, int weight)
-{
-    if (start >= adjList.size() || end >= adjList.size())
-    {
-        return;
-    }
-    adjList[start].push_back(std::make_pair(end, weight));
-    if (!oriented)
-    {
-        adjList[end].push_back(std::make_pair(start, weight));
-    }
-}
-
-void WeightedGraph::dijkstra(unsigned start, std::vector<unsigned>& distances) const
-{
-    distances.resize(adjList.size(), UINT_MAX);
-    distances[start] = 0;
-
-    auto comparator = [&distances](const unsigned& lhs, const unsigned& rhs) {
-        return distances[lhs] > distances[rhs];
-    };
-    std::priority_queue<unsigned, std::vector<unsigned>, decltype(comparator)> q(comparator);
-
-    q.push(start);
-
-    while (!q.empty())
-    {
-	unsigned currVertex = q.top();
-	q.pop();
-	    
-	for (const auto& [currNeighbor, currEdgeWeight] : adjList[currVertex])
-	{
-	    if (distances[currNeighbor] > distances[currVertex] + currEdgeWeight)
-	    {
-		    distances[currNeighbor] = distances[currVertex] + currEdgeWeight;
-		    q.push(currNeighbor);
-	    }
-	}
-    }
-}
-
-void WeightedGraph::bellmanFord(unsigned start, std::vector<int>& distances) const
-{
-    distances.resize(adjList.size(), INT_MAX);
-    distances[start] = 0;
-    
-    for (size_t phase = 0; phase < adjList.size(); phase++)
-    {
-        bool isLastPhase = phase == adjList.size() - 1;
-        
-        for (size_t i = 0; i < adjList.size(); i++)
-        {
-            if (distances[i] == INT_MAX)
-            {
-                continue;
-            }
-            
-            unsigned currVertex = i;
-            for (size_t j = 0; j < adjList[currVertex].size(); j++)
-            {
-                unsigned currNeighbor = adjList[currVertex][j].first;
-                int currEdgeWeight = adjList[currVertex][j].second;
-                if (distances[currNeighbor] > distances[currVertex] + currEdgeWeight)
-                {
-                    if (isLastPhase)
-                    {
-                        distances[currNeighbor] = INT_MAX;
-                        throw std::logic_error("Negative cycle detected!");
-                    }
-                    distances[currNeighbor] = distances[currVertex] + currEdgeWeight;
-                }
-            }
-        }
-    }
 }
