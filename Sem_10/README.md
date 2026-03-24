@@ -76,5 +76,9 @@
 ## Задачи
 
 [1. Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/description/)  
+
 [2. 0-1 Subarray](https://www.hackerrank.com/contests/sda-homework-9/challenges/0-1-1)  
+
 [3. Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/description/)  
+
+[4. Find a specific pair of indices](https://leetcode.com/problems/contains-duplicate-iii/description/)  
