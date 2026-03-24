@@ -2,7 +2,6 @@
 #include <vector>
 #include <set>
 
-
 bool containsNearbyAlmostDuplicate(std::vector<int>& nums, int indexDiff,
                                    int valueDiff)
 {
