@@ -2,8 +2,7 @@
 #include <vector>
 #include <set>
 
-bool containsNearbyAlmostDuplicate(std::vector<int>& nums, int indexDiff,
-                                   int valueDiff)
+bool containsNearbyAlmostDuplicate(std::vector<int>& nums, int indexDiff, int valueDiff)
 {
     std::multiset<long long> window;
 
