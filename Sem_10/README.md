@@ -81,4 +81,4 @@
 
 [3. Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/description/)  
 
-[4. Find a specific pair of indices](https://leetcode.com/problems/contains-duplicate-iii/description/)  
+[4. Find a Specific Pair of Indices](https://leetcode.com/problems/contains-duplicate-iii/description/)  
